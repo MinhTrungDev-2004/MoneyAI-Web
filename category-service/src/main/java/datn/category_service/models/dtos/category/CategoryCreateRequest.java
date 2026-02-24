@@ -6,6 +6,7 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CategoryCreateRequest {
+    private Long id;
     private String title;
     private String icon;
     private String color;

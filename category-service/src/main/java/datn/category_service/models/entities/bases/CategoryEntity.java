@@ -18,7 +18,7 @@ import datn.category_service.models.entities.enums.TypeCategory;
 @AllArgsConstructor
 
 @Entity
-public class CategoryEntity extends BaseEntity{
+public class CategoryEntity extends BaseEntity {
     @Column(name = "title_category", nullable = false)
     private String title;
 

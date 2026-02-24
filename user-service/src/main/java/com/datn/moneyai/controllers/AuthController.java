@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/v1/user")
+@RequestMapping("/api/users")
 public class AuthController extends ApiBaseController{
     private final AuthenticationManager authenticationManager;
     private final ITokenService tokenService;

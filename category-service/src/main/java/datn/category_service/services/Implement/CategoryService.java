@@ -3,12 +3,11 @@ package datn.category_service.services.Implement;
 import datn.category_service.models.dtos.category.CategoryCreateRequest;
 import datn.category_service.models.entities.bases.CategoryEntity;
 import datn.category_service.models.entities.enums.TypeCategory;
-import datn.category_service.models.global.ApiResult;
 import datn.category_service.repositories.CategoryRepository;
 import datn.category_service.services.Interfaces.ICategoryService;
 import org.springframework.stereotype.Service;
 
-import java.util.UUID;
+import java.util.Optional;
 
 @Service
 public class CategoryService implements ICategoryService {
@@ -19,7 +18,7 @@ public class CategoryService implements ICategoryService {
     }
 
     @Override
-    public ApiResult<UUID> createCategory(CategoryCreateRequest request) {
+    public String createCategory(CategoryCreateRequest request) {
         CategoryEntity newCategory = CategoryEntity.builder()
                 .title(request.getTitle())
                 .icon(request.getIcon())
@@ -27,6 +26,19 @@ public class CategoryService implements ICategoryService {
                 .type(TypeCategory.valueOf(request.getType().toUpperCase()))
                 .build();
         categoryRepository.save(newCategory);
-        return ApiResult.success(newCategory.getId(), "Tạo danh mục thành công");
+        return "Tạo danh mục thành công";
+    }
+
+    @Override
+    public Optional<CategoryEntity> updateCategory(CategoryCreateRequest request) {
+        Optional<CategoryEntity> category = categoryRepository.findById(request.getId());
+        if (category.isEmpty()) {
+            throw new RuntimeException("Category not found");
+        }
+        CategoryEntity categoryEntity = category.get();
+        categoryEntity.setTitle(request.getTitle());
+        categoryEntity.setIcon(request.getIcon());
+        CategoryEntity savedCategory = categoryRepository.save(categoryEntity);
+        return Optional.of(savedCategory);
     }
 }

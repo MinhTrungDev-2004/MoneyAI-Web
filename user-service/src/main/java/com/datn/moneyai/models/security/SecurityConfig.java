@@ -1,6 +1,8 @@
 package com.datn.moneyai.models.security;
 
 import lombok.RequiredArgsConstructor;
+
+import org.apache.http.protocol.HTTP;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -29,11 +31,10 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
-                                "/api/v1/user/register",
-                                "/api/v1/user/login"
-                        ).permitAll()
-                        .anyRequest().authenticated()
-                )
+                                "/api/users/register",
+                                "/api/users/login")
+                        .permitAll()
+                        .anyRequest().authenticated())
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
@@ -49,4 +50,3 @@ public class SecurityConfig {
         return config.getAuthenticationManager();
     }
 }
-
