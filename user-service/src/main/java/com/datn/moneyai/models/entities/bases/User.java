@@ -25,6 +25,7 @@ public class User extends BaseEntity {
     private String password;
 
     private String fullName;
+
     private String avatarUrl;
 
     @Column(length = 3)

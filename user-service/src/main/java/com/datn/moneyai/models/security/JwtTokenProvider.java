@@ -13,7 +13,6 @@ import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 import java.util.function.Function;
 
 @Component
@@ -38,7 +37,7 @@ public class JwtTokenProvider {
     public String generateAccessToken(UserDetails userDetails) {
         Map<String, Object> claims = new HashMap<>();
         if (userDetails instanceof UserPrincipal) {
-            claims.put("uid", ((UserPrincipal) userDetails).getId().toString());
+            claims.put("uid", ((UserPrincipal) userDetails).getId());
         }
         return createToken(claims, userDetails.getUsername(), expiration);
     }
@@ -46,7 +45,7 @@ public class JwtTokenProvider {
     public String generateRefreshToken(UserDetails userDetails) {
         Map<String, Object> claims = new HashMap<>();
         if (userDetails instanceof UserPrincipal) {
-            claims.put("uid", ((UserPrincipal) userDetails).getId().toString());
+            claims.put("uid", ((UserPrincipal) userDetails).getId());
         }
         return createToken(claims, userDetails.getUsername(), refreshExpiration);
     }
@@ -61,7 +60,7 @@ public class JwtTokenProvider {
                 .compact();
     }
 
-    // --- VALIDATE TOKEN  ---
+    // --- VALIDATE TOKEN ---
     public Boolean validateToken(String token, UserDetails userDetails) {
         try {
             Claims claims = extractAllClaims(token);
@@ -86,9 +85,9 @@ public class JwtTokenProvider {
         return extractClaim(token, Claims::getSubject);
     }
 
-    public UUID extractUserId(String token) {
-        String idStr = extractClaim(token, claims -> claims.get("uid", String.class));
-        return idStr == null ? null : UUID.fromString(idStr);
+    public Long extractUserId(String token) {
+        Number id = extractClaim(token, claims -> claims.get("uid", Number.class));
+        return id == null ? null : id.longValue();
     }
 
     public Date extractExpiration(String token) {

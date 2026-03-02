@@ -2,25 +2,25 @@ package com.datn.moneyai.models.security;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.UUID;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 public class UserPrincipal implements UserDetails {
-    private final UUID id;
+    private final Long id;
     private final String username;
     private final String password;
     private final Collection<? extends GrantedAuthority> authorities;
 
-    public UserPrincipal(UUID id, String username, String password, Collection<? extends GrantedAuthority> authorities) {
+    public UserPrincipal(Long id, String username, String password,
+            Collection<? extends GrantedAuthority> authorities) {
         this.id = id;
         this.username = username;
         this.password = password;
         this.authorities = authorities == null ? Collections.emptyList() : authorities;
     }
 
-    public UUID getId() {
+    public Long getId() {
         return id;
     }
 

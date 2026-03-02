@@ -17,24 +17,24 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/users")
-public class AuthController extends ApiBaseController{
+public class AuthController extends ApiBaseController {
     private final AuthenticationManager authenticationManager;
     private final ITokenService tokenService;
     private final IUserService userService;
 
     // Constructor
-    public AuthController(AuthenticationManager authenticationManager, ITokenService tokenService, IUserService userService) {
+    public AuthController(AuthenticationManager authenticationManager, ITokenService tokenService,
+            IUserService userService) {
         this.authenticationManager = authenticationManager;
         this.tokenService = tokenService;
         this.userService = userService;
     }
 
     @PostMapping("/register")
-    public ResponseEntity<ApiResult<UUID>> register(@RequestBody UserCreateRequest request) {
+    public ResponseEntity<ApiResult<Long>> register(@RequestBody UserCreateRequest request) {
         return exeResponseEntity(() -> userService.createUser(request));
     }
 
@@ -43,15 +43,14 @@ public class AuthController extends ApiBaseController{
         try {
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
-                            request.getUsername(),
-                            request.getPassword()
-                    )
-            );
+                            request.getEmail(),
+                            request.getPassword()));
             UserDetails userDetails = (UserDetails) authentication.getPrincipal();
             TokenResponse tokens = tokenService.generateTokens(userDetails);
-            return ResponseEntity.ok(ApiResult.success(tokens, "Đăng Nhập Thành Công"));
+            return ResponseEntity.ok(ApiResult.success(tokens, "Đăng nhập thành công"));
         } catch (BadCredentialsException ex) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ApiResult.fail("Tên đăng nhập sai hoặc mật khẩu không chính xác"));
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(ApiResult.fail("Email hoặc mật khẩu không chính xác"));
         }
     }
 
