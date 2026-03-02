@@ -1,10 +1,10 @@
-package com.datn.moneyai.models.entities;
+package com.datn.moneyai.models.entities.bases;
 
-import com.datn.moneyai.models.entities.bases.BaseEntity;
-import com.datn.moneyai.models.entities.enums.AuthProvider;
-import com.datn.moneyai.models.entities.enums.UserRole;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "users")
@@ -13,23 +13,28 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class UserEntity extends BaseEntity {
-    @Column(nullable = false, unique = true)
+public class User extends BaseEntity {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(unique = true, nullable = false)
     private String email;
 
+    @Column(nullable = false)
     private String password;
 
     private String fullName;
-
     private String avatarUrl;
 
-    private String defaultCurrency = "VND";
+    @Column(length = 3)
+    private String defaultCurrency;
 
-    @Enumerated(EnumType.STRING)
-    private AuthProvider authProvider;
+    @Column(name = "is_active")
+    @Builder.Default
+    private boolean isActive = true;
 
-    @Enumerated(EnumType.STRING)
-    private UserRole role;
-
-    private Boolean isActive = true;
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    private Set<UserRole> userRoles = new HashSet<>();
 }

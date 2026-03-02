@@ -1,9 +1,11 @@
 package com.datn.moneyai.models.entities.bases;
 
-import com.datn.moneyai.models.entities.User;
 import com.datn.moneyai.models.entities.enums.SavingGoalStatus;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
 
 @Entity
 @Table(name = "saving_goals")
@@ -12,21 +14,29 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class SavingGoalEntity extends BaseEntity {
-    @ManyToOne
+public class SavingGoal extends BaseEntity {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
     @Column(nullable = false)
     private String name;
 
-    @Column(nullable = false)
-    private java.math.BigDecimal targetAmount;
+    @Column(nullable = false, precision = 19, scale = 4)
+    private BigDecimal targetAmount;
 
-    private java.time.LocalDate deadlineDate;
+    private LocalDate deadlineDate;
 
     @Enumerated(EnumType.STRING)
-    private SavingGoalStatus status;
+    @Column(length = 20)
+    @Builder.Default
+    private SavingGoalStatus status = SavingGoalStatus.ONGOING;
 
-    private Boolean isDeleted = false;
+    @Column(name = "is_deleted")
+    @Builder.Default
+    private boolean isDeleted = false;
 }

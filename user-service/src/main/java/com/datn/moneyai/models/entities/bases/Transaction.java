@@ -1,31 +1,43 @@
 package com.datn.moneyai.models.entities.bases;
-
-import com.datn.moneyai.models.entities.User;
-import com.datn.moneyai.models.entities.enums.TransactionSource;
-import datn.category_service.models.entities.bases.CategoryEntity;
 import jakarta.persistence.*;
+import lombok.*;
 
-public class TransactionEntity extends BaseEntity{
-    @ManyToOne
+import java.math.BigDecimal;
+import java.time.LocalDate;
+
+@Entity
+@Table(name = "transactions")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class Transaction extends BaseEntity {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @ManyToOne
-    @JoinColumn(name = "category_id")
-    private CategoryEntity category;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "category_id", nullable = false)
+    private Category category;
+
+    @Column(nullable = false, precision = 19, scale = 4)
+    private BigDecimal amount;
 
     @Column(nullable = false)
-    private java.math.BigDecimal amount;
+    private LocalDate transactionDate;
 
-    @Column(nullable = false)
-    private java.time.LocalDateTime transactionDate;
-
+    @Column(columnDefinition = "TEXT")
     private String note;
 
-    @Enumerated(EnumType.STRING)
-    private TransactionSource source;
-
+    private String source;
     private String referenceId;
 
-    private Boolean isDeleted = false;
+    @Column(name = "is_deleted")
+    @Builder.Default
+    private boolean isDeleted = false;
 }

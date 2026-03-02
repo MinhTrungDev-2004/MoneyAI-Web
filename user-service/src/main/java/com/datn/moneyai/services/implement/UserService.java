@@ -4,7 +4,7 @@ import com.datn.moneyai.exceptions.UserMessageException;
 import com.datn.moneyai.models.dtos.users.UserCreateRequest;
 import com.datn.moneyai.models.dtos.users.UserGetsResponse;
 import com.datn.moneyai.models.entities.bases.UserEntity;
-import com.datn.moneyai.models.entities.enums.UserRole;
+import com.datn.moneyai.models.entities.enums.RoleName;
 import com.datn.moneyai.models.global.ApiResult;
 import com.datn.moneyai.repositories.UserRepository;
 import com.datn.moneyai.services.interfaces.IUserService;
@@ -27,7 +27,7 @@ public class UserService implements IUserService {
 
     @Override
     public ApiResult<List<UserGetsResponse>> getUser() {
-        List<UserEntity> users = userRepository.findAllByRoleNot((UserRole.USER));
+        List<UserEntity> users = userRepository.findAllByRoleNot((RoleName.USER));
 
         List<UserGetsResponse> responseList = users.stream()
                 .map(user -> UserGetsResponse.builder()
@@ -51,9 +51,9 @@ public class UserService implements IUserService {
         String hashedPassword = passwordEncoder.encode(request.getPassword());
         
         // Convert role từ String sang UserRole enum
-        UserRole userRole;
+        RoleName roleName;
         try {
-            userRole = UserRole.valueOf(request.getRole().toUpperCase());
+            roleName = RoleName.valueOf(request.getRole().toUpperCase());
         } catch (IllegalArgumentException e) {
             throw new UserMessageException("Vai trò không hợp lệ. Vui lòng chọn USER hoặc ADMIN");
         }
@@ -61,7 +61,7 @@ public class UserService implements IUserService {
         UserEntity newUser = UserEntity.builder()
                 .username(request.getUsername())
                 .password(hashedPassword)
-                .role(userRole)
+                .role(roleName)
                 .isEnabled(true)
                 .build();
         userRepository.save(newUser);

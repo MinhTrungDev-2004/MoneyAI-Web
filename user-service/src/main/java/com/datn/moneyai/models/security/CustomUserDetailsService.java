@@ -1,6 +1,6 @@
 package com.datn.moneyai.models.security;
 
-import com.datn.moneyai.models.entities.bases.UserEntity;
+import com.datn.moneyai.models.entities.bases.User;
 import com.datn.moneyai.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -24,7 +24,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 
         return new UserPrincipal(
                 user.getId(),
-                user.getUsername(),
+                user.getEmail(),
                 user.getPassword(),
                 Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + user.getRole().name()))
         );
