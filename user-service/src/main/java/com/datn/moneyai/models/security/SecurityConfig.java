@@ -32,7 +32,10 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/public/auth/login",
                                 "/public/auth/register",
-                                "/public/auth/logout")
+                                "/public/auth/logout",
+                                "/v3/api-docs/**",
+                                "/swagger-ui/**",
+                                "/swagger-ui.html")
                         .permitAll()
                         .anyRequest().authenticated())
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);

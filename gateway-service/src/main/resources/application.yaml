@@ -1,0 +1,60 @@
+server:
+    port: 8080
+
+spring:
+    application:
+        name: gateway-service
+    cloud:
+        gateway:
+            routes:
+                # 1. API Đăng nhập / Đăng ký (Public)
+                - id: user-service
+                  uri: lb://USER-SERVICE
+                  predicates:
+                      - Path=/public/auth/**
+
+                # 2. API Cần xác thực của User
+                - id: user-service-protected
+                  uri: lb://USER-SERVICE
+                  predicates:
+                      - Path=/auth/**
+
+                # 3. API của Category
+                - id: category-service
+                  uri: lb://CATEGORY-SERVICE
+                  predicates:
+                      - Path=/api/categories/**
+
+                # 4. Route lấy dữ liệu JSON Swagger của User Service (ĐỂ ĐỌC ĐƯỢC SWAGGER)
+                - id: openapi-user-service
+                  uri: lb://USER-SERVICE
+                  predicates:
+                      - Path=/v3/api-docs/user-service
+                  filters:
+                      - RewritePath=/v3/api-docs/user-service, /v3/api-docs
+eureka:
+    client:
+        service-url:
+            defaultZone: http://localhost:8761/eureka/
+        register-with-eureka: true
+        fetch-registry: true
+    instance:
+        hostname: localhost
+        ip-address: 127.0.0.1
+        prefer-ip-address: true
+
+# ===============================
+# CẤU HÌNH BẢO MẬT (JWT)
+# ===============================
+jwt:
+    secret: ThisIsA_VeryLongSecretKey_ForJwtMoneyAi_ChangeMe123456
+
+# ===============================
+# CẤU HÌNH GIAO DIỆN SWAGGER GATEWAY
+# ===============================
+springdoc:
+    swagger-ui:
+        # Định nghĩa danh sách Dropdown để chọn Service xem tài liệu
+        urls:
+            - name: User Service API
+              url: /v3/api-docs/user-service

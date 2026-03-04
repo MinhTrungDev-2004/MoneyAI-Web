@@ -1,0 +1,35 @@
+package com.datn.moneyai.configs;
+
+import io.swagger.v3.oas.models.Components;
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.info.Info;
+import io.swagger.v3.oas.models.security.SecurityRequirement;
+import io.swagger.v3.oas.models.security.SecurityScheme;
+import io.swagger.v3.oas.models.servers.Server; // Thêm import này
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+@Configuration
+public class SwaggerConfig {
+
+    @Bean
+    public OpenAPI customOpenAPI() {
+        final String securitySchemeName = "bearerAuth";
+
+        return new OpenAPI()
+                .addServersItem(new Server().url("/").description("Gateway Server"))
+
+                .info(new Info()
+                        .title("MoneyAI API Documentation")
+                        .version("1.0.0")
+                        .description("Tài liệu API cho dự án MoneyAI"))
+                .addSecurityItem(new SecurityRequirement().addList(securitySchemeName))
+                .components(new Components()
+                        .addSecuritySchemes(securitySchemeName,
+                                new SecurityScheme()
+                                        .name(securitySchemeName)
+                                        .type(SecurityScheme.Type.HTTP)
+                                        .scheme("bearer")
+                                        .bearerFormat("JWT")));
+    }
+}
