@@ -10,6 +10,10 @@ import com.datn.moneyai.repositories.CategoryRepository;
 import com.datn.moneyai.repositories.UserRepository;
 import com.datn.moneyai.services.interfaces.ICategoryService;
 import lombok.RequiredArgsConstructor;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -93,4 +97,27 @@ public class CategoryService implements ICategoryService {
                 .updatedAt(saved.getUpdatedAt())
                 .build();
     }
+
+    @Override
+    public List<CategoryResponse> getsCategory() {
+        List<CategoryEntity> categories = categoryRepository.findAllActiveCategories();
+        return categories.stream()
+                .map(category -> CategoryResponse.builder()
+                        .id(category.getId())
+                        .name(category.getName())
+                        .type(category.getType())
+                        .icon(category.getIcon())
+                        .colorCode(category.getColorCode())
+                        .build())
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public void deleteCategory(Long id) {
+        CategoryEntity existingCategory = categoryRepository.findActiveCategoryById(id)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy danh mục hoặc danh mục đã bị xóa!"));
+        existingCategory.setDeleted(true);
+        categoryRepository.save(existingCategory);
+    }
+
 }
