@@ -1,4 +1,5 @@
 package com.datn.moneyai.models.entities.bases;
+
 import com.datn.moneyai.models.entities.enums.EmailProvider;
 import jakarta.persistence.*;
 import lombok.*;
@@ -31,7 +32,4 @@ public class EmailAccount {
     private String accessToken;
     private String refreshToken;
     private LocalDateTime tokenExpiry;
-
-    @Column(name = "created_at", updatable = false)
-    private LocalDateTime createdAt = LocalDateTime.now();
 }

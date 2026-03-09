@@ -4,8 +4,6 @@ import com.datn.moneyai.models.entities.enums.NotificationType;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDateTime;
-
 @Entity
 @Table(name = "notifications")
 @Getter
@@ -13,7 +11,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Notification {
+public class Notification extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -34,7 +32,4 @@ public class Notification {
     @Column(name = "is_read")
     @Builder.Default
     private boolean isRead = false;
-
-    @Column(name = "created_at", updatable = false)
-    private LocalDateTime createdAt = LocalDateTime.now();
 }

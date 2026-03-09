@@ -3,7 +3,6 @@ package com.datn.moneyai.models.entities.bases;
 import com.datn.moneyai.models.entities.enums.AiMessageRole;
 import jakarta.persistence.*;
 import lombok.*;
-import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "ai_messages")
@@ -12,7 +11,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class AiMessage {
+public class AiMessage extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -27,7 +26,4 @@ public class AiMessage {
 
     @Column(columnDefinition = "TEXT")
     private String content;
-
-    @Column(name = "created_at", updatable = false)
-    private LocalDateTime createdAt = LocalDateTime.now();
 }

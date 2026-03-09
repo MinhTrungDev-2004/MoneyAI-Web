@@ -11,10 +11,8 @@ import com.datn.moneyai.repositories.CategoryRepository;
 import com.datn.moneyai.repositories.UserRepository;
 import com.datn.moneyai.services.interfaces.ICategoryService;
 import lombok.RequiredArgsConstructor;
-
 import java.util.List;
 import java.util.stream.Collectors;
-
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -55,7 +53,7 @@ public class CategoryService implements ICategoryService {
                 .name(request.getName())
                 .icon(request.getIcon())
                 .colorCode(request.getColorCode())
-                .type(request.getType())
+                .type(type)
                 .user(user)
                 .build();
         CategoryEntity saved = categoryRepository.save(newCategory);
