@@ -18,10 +18,11 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+import jakarta.validation.Valid;
 
 @RestController
 @RequiredArgsConstructor
-public class AuthController extends ApiBaseController {
+public class AuthController {
     private final AuthenticationManager authenticationManager;
     private final ITokenService tokenService;
     private final IAuthService authService;
@@ -34,8 +35,8 @@ public class AuthController extends ApiBaseController {
      *         tạo.
      */
     @PostMapping("/public/auth/register")
-    public ResponseEntity<ApiResult<Long>> register(@RequestBody UserCreateRequest request) {
-        return exeResponseEntity(() -> authService.createUser(request));
+    public ResponseEntity<ApiResult<Long>> register(@Valid @RequestBody UserCreateRequest request) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(authService.createUser(request));
     }
 
     /**
@@ -46,7 +47,7 @@ public class AuthController extends ApiBaseController {
      *         thành công, hoặc lỗi nếu đăng nhập thất bại.
      */
     @PostMapping("/public/auth/login")
-    public ResponseEntity<ApiResult<TokenResponse>> login(@RequestBody LoginRequest request) {
+    public ResponseEntity<ApiResult<TokenResponse>> login(@Valid @RequestBody LoginRequest request) {
         try {
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(

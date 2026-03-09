@@ -1,7 +1,6 @@
 package com.datn.moneyai.models.global;
 
 import lombok.*;
-
 import java.util.UUID;
 
 @Getter
@@ -19,6 +18,7 @@ public class ApiResult<T> {
     private String internalMessage;
 
     private T data;
+
     public static <T> ApiResult<T> success(T data, String userMessage) {
         ApiResult<T> result = new ApiResult<>();
         result.setStatus(true);

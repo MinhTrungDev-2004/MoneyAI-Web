@@ -8,22 +8,16 @@ import com.datn.moneyai.models.dtos.transaction.TransactionResponse;
 import com.datn.moneyai.models.dtos.transaction.TransactionUpdateRequest;
 import com.datn.moneyai.models.global.ApiResult;
 import com.datn.moneyai.services.interfaces.ITransactionService;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 
 @RestController
-@AllArgsConstructor
-@RequestMapping("/transaction")
-public class TransactionController extends ApiBaseController {
-
+@RequiredArgsConstructor
+@RequestMapping("/transactions")
+public class TransactionController {
     private final ITransactionService transactionService;
 
     /**
@@ -36,7 +30,8 @@ public class TransactionController extends ApiBaseController {
     @PostMapping("/create")
     public ResponseEntity<ApiResult<TransactionResponse>> createTransaction(
             @Valid @RequestBody TransactionRequest request) {
-        return exeResponseEntity(() -> transactionService.createTransaction(request));
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(transactionService.createTransaction(request));
     }
 
     /**
@@ -47,11 +42,11 @@ public class TransactionController extends ApiBaseController {
      * @return ResponseEntity chứa ApiResult mang theo đối tượng TransactionResponse
      *         sau khi cập nhật.
      */
-    @PutMapping("/update/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<ApiResult<TransactionResponse>> updateTransaction(
             @PathVariable Long id,
             @Valid @RequestBody TransactionUpdateRequest request) {
-        return exeResponseEntity(() -> transactionService.updateTransaction(id, request));
+        return ResponseEntity.ok(transactionService.updateTransaction(id, request));
     }
 
     /**
@@ -61,9 +56,9 @@ public class TransactionController extends ApiBaseController {
      * @return ResponseEntity chứa ApiResult trạng thái thành công với dữ liệu là
      *         Void.
      */
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<ApiResult<Void>> deleteTransaction(@PathVariable Long id) {
-        return exeResponseEntity(() -> transactionService.deleteTransaction(id));
+        return ResponseEntity.ok(transactionService.deleteTransaction(id));
     }
 
     /**
@@ -73,10 +68,10 @@ public class TransactionController extends ApiBaseController {
      * @return ResponseEntity chứa ApiResult mang theo danh sách (List) các
      *         TransactionResponse.
      */
-    @GetMapping("/gets-all/{categoryId}")
+    @GetMapping("/category/{categoryId}")
     public ResponseEntity<ApiResult<List<TransactionResponse>>> getTransactionsByCategory(
             @PathVariable Long categoryId) {
-        return exeResponseEntity(() -> transactionService.getTransactionsByCategory(categoryId));
+        return ResponseEntity.ok(transactionService.getTransactionsByCategory(categoryId));
     }
 
     /**
@@ -85,30 +80,29 @@ public class TransactionController extends ApiBaseController {
      * @param categoryId ID của danh mục cần tính tổng.
      * @return ResponseEntity chứa ApiResult mang theo giá trị tổng (BigDecimal).
      */
-    @GetMapping("/total-amount/{categoryId}")
-    public ResponseEntity<ApiResult<BigDecimal>> getTotalAmountByCategoryAndMonth(@PathVariable Long categoryId) {
-        return exeResponseEntity(() -> transactionService.getTotalAmountByCategoryAndMonth(categoryId));
+    @GetMapping("/category/{categoryId}/total-amount")
+    public ResponseEntity<ApiResult<BigDecimal>> getTotalAmountByCategoryAndMonth(
+            @PathVariable Long categoryId) {
+        return ResponseEntity.ok(transactionService.getTotalAmountByCategoryAndMonth(categoryId));
     }
 
     /**
-     * API tính tổng toàn bộ thu nhập (Income) của người dùng trong tháng hiện tại.
+     * API tính tổng số tiền thu nhập trong tháng hiện tại.
      *
-     * @return ResponseEntity chứa ApiResult mang theo giá trị tổng thu nhập
-     *         (BigDecimal).
+     * @return ResponseEntity chứa ApiResult mang theo giá trị tổng (BigDecimal).
      */
-    @GetMapping("/total-money-income")
+    @GetMapping("/total-income")
     public ResponseEntity<ApiResult<BigDecimal>> calculateTotalIncome() {
-        return exeResponseEntity(() -> transactionService.calculateTotalIncome());
+        return ResponseEntity.ok(transactionService.calculateTotalIncome());
     }
 
     /**
-     * API tính tổng toàn bộ chi tiêu (Expense) của người dùng trong tháng hiện tại.
+     * API tính tổng số tiền chi tiêu trong tháng hiện tại.
      *
-     * @return ResponseEntity chứa ApiResult mang theo giá trị tổng chi tiêu
-     *         (BigDecimal).
+     * @return ResponseEntity chứa ApiResult mang theo giá trị tổng (BigDecimal).
      */
-    @GetMapping("/total-money-expense")
+    @GetMapping("/total-expense")
     public ResponseEntity<ApiResult<BigDecimal>> calculateTotalExpense() {
-        return exeResponseEntity(() -> transactionService.calculateTotalExpense());
+        return ResponseEntity.ok(transactionService.calculateTotalExpense());
     }
 }

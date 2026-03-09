@@ -13,13 +13,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.datn.moneyai.models.global.ApiResult;
 import com.datn.moneyai.services.interfaces.ICategoryService;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.http.HttpStatus;
+import jakarta.validation.Valid;
 
 @RestController
-@AllArgsConstructor
-@RequestMapping("/category")
-public class CategoryController extends ApiBaseController {
+@RequiredArgsConstructor
+@RequestMapping("/categories")
+public class CategoryController {
     private final ICategoryService categoryService;
 
     /**
@@ -30,8 +32,8 @@ public class CategoryController extends ApiBaseController {
      *         vừa tạo.
      */
     @PostMapping("/create")
-    public ResponseEntity<ApiResult<CategoryResponse>> createCategory(@RequestBody CategoryRequest request) {
-        return exeResponseEntity(() -> categoryService.createCategory(request));
+    public ResponseEntity<ApiResult<CategoryResponse>> createCategory(@Valid @RequestBody CategoryRequest request) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(categoryService.createCategory(request));
     }
 
     /**
@@ -44,8 +46,8 @@ public class CategoryController extends ApiBaseController {
      */
     @PutMapping("/update/{id}")
     public ResponseEntity<ApiResult<CategoryResponse>> updateCategory(@PathVariable Long id,
-            @RequestBody CategoryRequest request) {
-        return exeResponseEntity(() -> categoryService.updateCategory(id, request));
+            @Valid @RequestBody CategoryRequest request) {
+        return ResponseEntity.ok(categoryService.updateCategory(id, request));
     }
 
     /**
@@ -56,7 +58,7 @@ public class CategoryController extends ApiBaseController {
      */
     @GetMapping("/gets-all")
     public ResponseEntity<ApiResult<List<CategoryResponse>>> getAllCategory() {
-        return exeResponseEntity(() -> categoryService.getsCategory());
+        return ResponseEntity.ok(categoryService.getsCategory());
     }
 
     /**
@@ -67,6 +69,6 @@ public class CategoryController extends ApiBaseController {
      */
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<ApiResult<Void>> deleteCategory(@PathVariable Long id) {
-        return exeResponseEntity(() -> categoryService.deleteCategory(id));
+        return ResponseEntity.ok(categoryService.deleteCategory(id));
     }
 }

@@ -11,16 +11,16 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface BudgetRepository extends JpaRepository<Budget, Long> {
 
-    @Query("SELECT b FROM Budget b WHERE b.id = :id AND b.user.id = :userId")
+    @Query(value = "SELECT * FROM budgets WHERE id = :id AND user_id = :userId", nativeQuery = true)
     Optional<Budget> findByIdAndUserId(@Param("id") Long id, @Param("userId") Long userId);
 
-    @Query("SELECT b FROM Budget b WHERE b.user.id = :userId AND b.category.id = :categoryId AND b.month = :month AND b.year = :year")
+    @Query(value = "SELECT * FROM budgets WHERE user_id = :userId AND category_id = :categoryId AND month = :month AND year = :year", nativeQuery = true)
     Optional<Budget> findByUserAndCategoryAndMonthAndYear(@Param("userId") Long userId,
                                                           @Param("categoryId") Long categoryId,
                                                           @Param("month") Integer month,
                                                           @Param("year") Integer year);
 
-    @Query("SELECT b FROM Budget b WHERE b.user.id = :userId AND b.month = :month AND b.year = :year")
+    @Query(value = "SELECT * FROM budgets WHERE user_id = :userId AND month = :month AND year = :year", nativeQuery = true)
     List<Budget> findAllByUserAndMonthAndYear(@Param("userId") Long userId,
                                               @Param("month") Integer month,
                                               @Param("year") Integer year);

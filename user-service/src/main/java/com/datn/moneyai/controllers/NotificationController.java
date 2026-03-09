@@ -6,7 +6,7 @@ import com.datn.moneyai.models.dtos.notification.NotificationGetsResponse;
 import com.datn.moneyai.models.dtos.notification.NotificationUpdateRequest;
 import com.datn.moneyai.models.global.ApiResult;
 import com.datn.moneyai.services.interfaces.INotificationService;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,11 +18,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import org.springframework.http.HttpStatus;
+import jakarta.validation.Valid;
 
 @RestController
-@AllArgsConstructor
-@RequestMapping("/notification")
-public class NotificationController extends ApiBaseController {
+@RequiredArgsConstructor
+@RequestMapping("/notifications")
+public class NotificationController {
     private final INotificationService notificationService;
 
     /**
@@ -35,8 +37,8 @@ public class NotificationController extends ApiBaseController {
      */
     @PostMapping("/create")
     public ResponseEntity<ApiResult<NotificationGetResponse>> createNotification(
-            @RequestBody NotificationCreateRequest request) {
-        return exeResponseEntity(() -> notificationService.createNotification(request));
+            @Valid @RequestBody NotificationCreateRequest request) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(notificationService.createNotification(request));
     }
 
     /**
@@ -50,8 +52,8 @@ public class NotificationController extends ApiBaseController {
      */
     @PutMapping("/update/{id}")
     public ResponseEntity<ApiResult<NotificationGetResponse>> updateNotification(@PathVariable Long id,
-            @RequestBody NotificationUpdateRequest request) {
-        return exeResponseEntity(() -> notificationService.updateNotification(id, request));
+            @Valid @RequestBody NotificationUpdateRequest request) {
+        return ResponseEntity.ok(notificationService.updateNotification(id, request));
     }
 
     /**
@@ -62,7 +64,7 @@ public class NotificationController extends ApiBaseController {
      */
     @GetMapping("/gets-all")
     public ResponseEntity<ApiResult<List<NotificationGetsResponse>>> getAllNotification() {
-        return exeResponseEntity(() -> notificationService.getsNotification());
+        return ResponseEntity.ok(notificationService.getsNotification());
     }
 
     /**
@@ -73,6 +75,6 @@ public class NotificationController extends ApiBaseController {
      */
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<ApiResult<Void>> deleteNotification(@PathVariable Long id) {
-        return exeResponseEntity(() -> notificationService.deleteNotification(id));
+        return ResponseEntity.ok(notificationService.deleteNotification(id));
     }
 }

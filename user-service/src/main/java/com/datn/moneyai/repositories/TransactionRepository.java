@@ -12,32 +12,34 @@ import org.springframework.data.repository.query.Param;
 @Repository
 public interface TransactionRepository extends JpaRepository<TransactionEntity, Long> {
 
-    @Query("SELECT t FROM TransactionEntity t WHERE t.id = :id AND t.user.id = :userId")
+    @Query(value = "SELECT * FROM transactions WHERE id = :id AND user_id = :userId", nativeQuery = true)
     Optional<TransactionEntity> findActiveByIdAndUser(@Param("id") Long id, @Param("userId") Long userId);
 
-    @Query("SELECT t FROM TransactionEntity t WHERE t.category.id = :categoryId AND t.user.id = :userId")
+    @Query(value = "SELECT * FROM transactions WHERE category_id = :categoryId AND user_id = :userId", nativeQuery = true)
     List<TransactionEntity> findAllActiveByCategoryAndUser(@Param("categoryId") Long categoryId,
             @Param("userId") Long userId);
 
-    @Query("SELECT COALESCE(SUM(t.totalAmount), 0) FROM TransactionEntity t " +
-            "WHERE t.category.id = :categoryId AND t.user.id = :userId " +
-            "AND MONTH(t.transactionDate) = MONTH(CURRENT_DATE) " +
-            "AND YEAR(t.transactionDate) = YEAR(CURRENT_DATE)")
+    @Query(value = "SELECT COALESCE(SUM(total_amount), 0) FROM transactions " +
+            "WHERE category_id = :categoryId AND user_id = :userId " +
+            "AND MONTH(transaction_date) = MONTH(CURRENT_DATE) " +
+            "AND YEAR(transaction_date) = YEAR(CURRENT_DATE)", nativeQuery = true)
     BigDecimal sumTotalAmountByCategoryAndMonth(@Param("categoryId") Long categoryId, @Param("userId") Long userId);
 
-    @Query("SELECT COALESCE(SUM(t.totalAmount), 0) FROM TransactionEntity t " +
-            "WHERE t.user.id = :userId " +
-            "AND t.category.type = 'THU' " +
-            "AND MONTH(t.transactionDate) = MONTH(CURRENT_DATE) " +
-            "AND YEAR(t.transactionDate) = YEAR(CURRENT_DATE) " +
-            "AND t.totalAmount > 0")
+    @Query(value = "SELECT COALESCE(SUM(t.total_amount), 0) FROM transactions t " +
+            "INNER JOIN category c ON t.category_id = c.id " +
+            "WHERE t.user_id = :userId " +
+            "AND c.type = 'THU' " +
+            "AND MONTH(t.transaction_date) = MONTH(CURRENT_DATE) " +
+            "AND YEAR(t.transaction_date) = YEAR(CURRENT_DATE) " +
+            "AND t.total_amount > 0", nativeQuery = true)
     BigDecimal calculateTotalIncome(@Param("userId") Long userId);
 
-    @Query("SELECT COALESCE(SUM(t.totalAmount), 0) FROM TransactionEntity t " +
-            "WHERE t.user.id = :userId " +
-            "AND t.category.type = 'CHI' " +
-            "AND MONTH(t.transactionDate) = MONTH(CURRENT_DATE) " +
-            "AND YEAR(t.transactionDate) = YEAR(CURRENT_DATE) " +
-            "AND t.totalAmount > 0")
+    @Query(value = "SELECT COALESCE(SUM(t.total_amount), 0) FROM transactions t " +
+            "INNER JOIN category c ON t.category_id = c.id " +
+            "WHERE t.user_id = :userId " +
+            "AND c.type = 'CHI' " +
+            "AND MONTH(t.transaction_date) = MONTH(CURRENT_DATE) " +
+            "AND YEAR(t.transaction_date) = YEAR(CURRENT_DATE) " +
+            "AND t.total_amount > 0", nativeQuery = true)
     BigDecimal calculateTotalExpense(@Param("userId") Long userId);
 }
