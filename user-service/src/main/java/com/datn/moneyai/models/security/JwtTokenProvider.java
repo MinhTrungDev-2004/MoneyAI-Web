@@ -13,6 +13,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.List;
 
 @Component
 public class JwtTokenProvider {
@@ -43,6 +45,10 @@ public class JwtTokenProvider {
         if (userDetails instanceof UserPrincipal) {
             claims.put("uid", ((UserPrincipal) userDetails).getId());
         }
+        List<String> roles = userDetails.getAuthorities().stream()
+                .map(auth -> auth.getAuthority())
+                .collect(Collectors.toList());
+        claims.put("roles", roles);
         return createToken(claims, userDetails.getUsername(), expiration);
     }
 
@@ -58,6 +64,10 @@ public class JwtTokenProvider {
         if (userDetails instanceof UserPrincipal) {
             claims.put("uid", ((UserPrincipal) userDetails).getId());
         }
+        List<String> roles = userDetails.getAuthorities().stream()
+                .map(auth -> auth.getAuthority())
+                .collect(Collectors.toList());
+        claims.put("roles", roles);
         return createToken(claims, userDetails.getUsername(), refreshExpiration);
     }
 
