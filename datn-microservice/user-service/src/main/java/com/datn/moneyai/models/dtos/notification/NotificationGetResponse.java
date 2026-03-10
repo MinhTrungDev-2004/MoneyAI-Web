@@ -1,0 +1,21 @@
+package com.datn.moneyai.models.dtos.notification;
+
+import com.datn.moneyai.models.entities.enums.NotificationType;
+import lombok.*;
+
+import java.time.LocalDateTime;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class NotificationGetResponse {
+    private Long id;
+    private Long userId;
+    private NotificationType type;
+    private String title;
+    private String content;
+    private boolean isRead;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+}
