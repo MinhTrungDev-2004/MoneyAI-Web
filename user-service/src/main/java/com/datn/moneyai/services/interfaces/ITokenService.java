@@ -9,5 +9,5 @@ import org.springframework.security.core.userdetails.UserDetails;
 public interface ITokenService {
     ApiResult<TokenResponse> generateTokens(UserDetails userDetails);
 
-    public ApiResult<LoginGetResponse> getUserInfo(Authentication authentication);
+    ApiResult<LoginGetResponse> getUserInfo(Long userId);
 }

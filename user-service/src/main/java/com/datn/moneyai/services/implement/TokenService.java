@@ -13,6 +13,7 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+
 import java.util.concurrent.TimeUnit;
 
 @Service
@@ -21,15 +22,7 @@ public class TokenService implements ITokenService {
     private final JwtTokenProvider jwtTokenProvider;
     private final UserRepository userRepository;
     private final StringRedisTemplate redisTemplate;
-
-    /**
-     * Tạo mới Access Token và Refresh Token cho người dùng dựa trên thông tin
-     * UserDetails.
-     * 
-     * @param userDetails Thông tin chi tiết của người dùng (UserDetails).
-     * @return ApiResult mang theo đối tượng TokenResponse chứa Access Token và
-     *         Refresh Token.
-     */
+    
     @Override
     public ApiResult<TokenResponse> generateTokens(UserDetails userDetails) {
         String accessToken = jwtTokenProvider.generateAccessToken(userDetails);
@@ -42,24 +35,18 @@ public class TokenService implements ITokenService {
         }
         return ApiResult.success(TokenResponse.builder()
                 .accessToken(accessToken)
+                .refreshToken(refreshToken)
                 .tokenType("Bearer")
                 .expiresIn(jwtTokenProvider.extractExpiration(accessToken).getTime())
                 .build(), "Tạo token thành công");
     }
 
-    /**
-     * Lấy thông tin người dùng hiện tại dựa trên Authentication và trả về dưới
-     * dạng LoginGetResponse.
-     *
-     * @param authentication Thông tin xác thực của người dùng hiện tại.
-     * @return ApiResult mang theo đối tượng LoginGetResponse chứa thông tin người
-     *         dùng.
-     */
+
     @Override
-    public ApiResult<LoginGetResponse> getUserInfo(Authentication authentication) {
-        Long userId = getUserIdFromAuthentication(authentication);
+    public ApiResult<LoginGetResponse> getUserInfo(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy người dùng với id: " + userId));
+
         LoginGetResponse response = LoginGetResponse.builder()
                 .fullName(user.getFullName())
                 .email(user.getEmail())
@@ -70,14 +57,6 @@ public class TokenService implements ITokenService {
         return ApiResult.success(response, "Lấy thông tin người dùng thành công");
     }
 
-    /**
-     * Hàm phụ trợ để trích xuất userId từ Authentication.
-     *
-     * @param authentication Thông tin xác thực của người dùng hiện tại.
-     * @return userId của người dùng.
-     * @throws IllegalArgumentException nếu không thể lấy thông tin người dùng từ
-     *                                  Authentication.
-     */
     private Long getUserIdFromAuthentication(Authentication authentication) {
         Object principal = authentication.getPrincipal();
         if (principal instanceof UserPrincipal userPrincipal) {

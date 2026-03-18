@@ -11,19 +11,20 @@ import java.time.LocalDate;
 import java.util.List;
 
 public interface ITransactionService {
-    ApiResult<TransactionResponse> createTransaction(TransactionRequest request);
 
-    ApiResult<TransactionResponse> updateTransaction(Long id, TransactionUpdateRequest request);
+  ApiResult<TransactionResponse> createTransaction(TransactionRequest request);
 
-    ApiResult<Void> deleteTransaction(Long id);
+  ApiResult<TransactionResponse> updateTransaction(Long id, TransactionUpdateRequest request);
 
-    ApiResult<List<TransactionResponse>> getTransactionsByCategory(Long categoryId);
+  ApiResult<Void> deleteTransaction(Long id);
 
-    ApiResult<BigDecimal> getTotalAmountByCategoryAndMonth(Long categoryId);
+  ApiResult<List<TransactionResponse>> getTransactionsByCategory(Long categoryId);
 
-    ApiResult<List<TransactionResponse>> getTransactionsByDate(LocalDate date);
+  ApiResult<BigDecimal> getTotalAmountByCategoryAndMonth(Long categoryId);
 
-    ApiResult<BigDecimal> calculateTotalIncome();
+  ApiResult<List<TransactionResponse>> getTransactionsByDate(LocalDate date);
 
-    ApiResult<BigDecimal> calculateTotalExpense();
+  ApiResult<BigDecimal> calculateTotalIncome();
+
+  ApiResult<BigDecimal> calculateTotalExpense();
 }

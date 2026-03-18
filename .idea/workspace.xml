@@ -5,7 +5,19 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="30b0c29d-aee8-4be6-b944-886b24f3c2ab" name="Changes" comment="update category api">
-      <change beforePath="$PROJECT_DIR$/user-service/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/user-service/src/main/resources/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gateway-service/src/main/resources/application.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/gateway-service/src/main/resources/application.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/user-service/src/main/java/com/datn/moneyai/controllers/AuthController.java" beforeDir="false" afterPath="$PROJECT_DIR$/user-service/src/main/java/com/datn/moneyai/controllers/AuthController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/user-service/src/main/java/com/datn/moneyai/controllers/TransactionController.java" beforeDir="false" afterPath="$PROJECT_DIR$/user-service/src/main/java/com/datn/moneyai/controllers/TransactionController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/user-service/src/main/java/com/datn/moneyai/models/dtos/auth/TokenResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/user-service/src/main/java/com/datn/moneyai/models/dtos/auth/TokenResponse.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/user-service/src/main/java/com/datn/moneyai/models/dtos/transaction/TransactionResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/user-service/src/main/java/com/datn/moneyai/models/dtos/transaction/TransactionResponse.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/user-service/src/main/java/com/datn/moneyai/models/security/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/user-service/src/main/java/com/datn/moneyai/models/security/SecurityConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/user-service/src/main/java/com/datn/moneyai/repositories/TransactionRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/user-service/src/main/java/com/datn/moneyai/repositories/TransactionRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/user-service/src/main/java/com/datn/moneyai/services/implement/TokenService.java" beforeDir="false" afterPath="$PROJECT_DIR$/user-service/src/main/java/com/datn/moneyai/services/implement/TokenService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/user-service/src/main/java/com/datn/moneyai/services/implement/TransactionService.java" beforeDir="false" afterPath="$PROJECT_DIR$/user-service/src/main/java/com/datn/moneyai/services/implement/TransactionService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/user-service/src/main/java/com/datn/moneyai/services/interfaces/IAuthService.java" beforeDir="false" afterPath="$PROJECT_DIR$/user-service/src/main/java/com/datn/moneyai/services/interfaces/IAuthService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/user-service/src/main/java/com/datn/moneyai/services/interfaces/ITokenService.java" beforeDir="false" afterPath="$PROJECT_DIR$/user-service/src/main/java/com/datn/moneyai/services/interfaces/ITokenService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/user-service/src/main/java/com/datn/moneyai/services/interfaces/ITransactionService.java" beforeDir="false" afterPath="$PROJECT_DIR$/user-service/src/main/java/com/datn/moneyai/services/interfaces/ITransactionService.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -21,6 +33,9 @@
       </list>
     </option>
   </component>
+  <component name="FormatOnSaveOptions">
+    <option name="myRunOnSave" value="true" />
+  </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
@@ -33,7 +48,7 @@
   <component name="GithubPullRequestsUISettings">{
   &quot;selectedUrlAndAccountId&quot;: {
     &quot;url&quot;: &quot;https://github.com/MinhTrungDev-2004/datn-microservice.git&quot;,
-    &quot;accountId&quot;: &quot;496cd631-6735-4233-b4fe-1451521eabe1&quot;
+    &quot;accountId&quot;: &quot;00fc0245-c9d6-4def-961d-cc912f609abd&quot;
   }
 }</component>
   <component name="KubernetesApiPersistence">{}</component>
@@ -51,6 +66,9 @@
   &quot;associatedIndex&quot;: 1
 }</component>
   <component name="ProjectId" id="39VGfmL4Bd7vqNqHn568IPHFK9K" />
+  <component name="ProjectLevelVcsManager">
+    <OptionsSetting value="false" id="Update" />
+  </component>
   <component name="ProjectViewState">
     <option name="showLibraryContents" value="true" />
   </component>
@@ -66,9 +84,9 @@
     "RunOnceActivity.git.unshallow": "true",
     "RunOnceActivity.typescript.service.memoryLimit.init": "true",
     "Spring Boot.CategoryServiceApplication.executor": "Run",
-    "Spring Boot.DiscoveryServerApplication.executor": "Run",
-    "Spring Boot.GatewayServiceApplication.executor": "Run",
-    "Spring Boot.UserServiceApplication.executor": "Run",
+    "Spring Boot.DiscoveryServerApplication.executor": "Debug",
+    "Spring Boot.GatewayServiceApplication.executor": "Debug",
+    "Spring Boot.UserServiceApplication.executor": "Debug",
     "git-widget-placeholder": "main",
     "kotlin-language-version-configured": "true",
     "last_opened_file_path": "D:/BE/datn-microservice",
@@ -81,6 +99,7 @@
     "project.structure.proportion": "0.0",
     "project.structure.side.proportion": "0.0",
     "run.configurations.included.in.services": "true",
+    "settings.editor.selected.configurable": "preferences.pluginManager",
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
@@ -108,7 +127,7 @@
             <map>
               <entry key="DiscoveryServerApplication" value="STOPPED" />
               <entry key="GatewayServiceApplication" value="STOPPED" />
-              <entry key="UserServiceApplication" value="FAILED" />
+              <entry key="UserServiceApplication" value="STOPPED" />
             </map>
           </value>
         </entry>
@@ -150,8 +169,8 @@
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-jdk-30f59d01ecdd-2fc7cc6b9a17-intellij.indexing.shared.core-IU-253.31033.145" />
-        <option value="bundled-js-predefined-d6986cc7102b-9b0f141eb926-JavaScript-IU-253.31033.145" />
+        <option value="bundled-jdk-30f59d01ecdd-2fc7cc6b9a17-intellij.indexing.shared.core-IU-253.32098.37" />
+        <option value="bundled-js-predefined-d6986cc7102b-9b0f141eb926-JavaScript-IU-253.32098.37" />
       </set>
     </attachedChunks>
   </component>
@@ -215,6 +234,8 @@
       <workItem from="1773364169083" duration="800000" />
       <workItem from="1773371417064" duration="1792000" />
       <workItem from="1773495350233" duration="904000" />
+      <workItem from="1773840867346" duration="116000" />
+      <workItem from="1773841003502" duration="7124000" />
     </task>
     <task id="LOCAL-00001" summary="update category api">
       <option name="closed" value="true" />
@@ -244,5 +265,9 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="update category api" />
     <option name="LAST_COMMIT_MESSAGE" value="update category api" />
+  </component>
+  <component name="XSLT-Support.FileAssociations.UIState">
+    <expand />
+    <select />
   </component>
 </project>

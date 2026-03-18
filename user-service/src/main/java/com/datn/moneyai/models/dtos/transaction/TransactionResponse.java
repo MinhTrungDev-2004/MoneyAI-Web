@@ -17,18 +17,18 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class TransactionResponse {
 
-    private Long id;
+  private Long id;
+  
+  private Long categoryId;
 
-    private Long categoryId;
+  private String categoryName;
 
-    private String categoryName;
-    
-    private CategoryType categoryType;
+  private CategoryType categoryType;
 
-    @Positive(message = "Số tiền phải lớn hơn 0")
-    private BigDecimal amount;
+  @Positive(message = "Số tiền phải lớn hơn 0")
+  private BigDecimal amount;
 
-    private LocalDate transactionDate;
+  private LocalDate transactionDate;
 
-    private String note;
+  private String note;
 }
