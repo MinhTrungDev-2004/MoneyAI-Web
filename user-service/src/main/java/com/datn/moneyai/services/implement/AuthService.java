@@ -55,6 +55,7 @@ public class AuthService implements IAuthService {
         if (userRepository.existsByEmail(request.getEmail())) {
             throw new UserMessageException("Email đã tồn tại.");
         }
+
         String hashedPassword = passwordEncoder.encode(request.getPassword());
 
         User newUser = User.builder()
@@ -63,8 +64,9 @@ public class AuthService implements IAuthService {
                 .isActive(true)
                 .build();
 
-        Role userRoleEntity = roleRepository.findByName(RoleName.USER)
-                .orElseThrow(() -> new UserMessageException("Lỗi hệ thống: Không tìm thấy quyền mặc định (USER)."));
+        RoleName targetRoleName = (request.getRole() != null) ? request.getRole() : RoleName.USER;
+        Role userRoleEntity = roleRepository.findByName(targetRoleName)
+                .orElseThrow(() -> new UserMessageException("Lỗi hệ thống: Không tìm thấy quyền (" + targetRoleName + ")."));
 
         UserRole userRole = UserRole.builder()
                 .user(newUser)
@@ -73,7 +75,7 @@ public class AuthService implements IAuthService {
         newUser.setUserRoles(Set.of(userRole));
 
         userRepository.save(newUser);
-        // Map từ dữ liệu tĩnh (DefaultCategoryData) sang Entity Category
+
         List<CategoryEntity> defaultCategories = DefaultCategoryData.DEFAULT_CATEGORIES.stream()
                 .map(data -> CategoryEntity.builder()
                         .user(newUser)
@@ -82,8 +84,10 @@ public class AuthService implements IAuthService {
                         .icon(data.icon())
                         .colorCode(data.colorCode())
                         .build())
-                .toList(); // Dùng toList() của Java 16+ cực gọn
+                .toList();
+
         categoryRepository.saveAll(defaultCategories);
+
         return ApiResult.success(newUser.getId(), "Đăng ký thành công.");
     }
 

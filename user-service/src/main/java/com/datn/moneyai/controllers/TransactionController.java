@@ -1,7 +1,10 @@
 package com.datn.moneyai.controllers;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
+
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.RestController;
 import com.datn.moneyai.models.dtos.transaction.TransactionRequest;
 import com.datn.moneyai.models.dtos.transaction.TransactionResponse;
@@ -104,5 +107,11 @@ public class TransactionController {
     @GetMapping("/total-expense")
     public ResponseEntity<ApiResult<BigDecimal>> calculateTotalExpense() {
         return ResponseEntity.ok(transactionService.calculateTotalExpense());
+    }
+
+    @GetMapping("/by-date")
+    public ApiResult<List<TransactionResponse>> getTransactionsByDate(
+            @RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
+        return transactionService.getTransactionsByDate(date);
     }
 }

@@ -4,8 +4,10 @@ import com.datn.moneyai.models.dtos.transaction.TransactionRequest;
 import com.datn.moneyai.models.dtos.transaction.TransactionResponse;
 import com.datn.moneyai.models.dtos.transaction.TransactionUpdateRequest;
 import com.datn.moneyai.models.global.ApiResult;
+import org.springframework.cglib.core.Local;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 
 public interface ITransactionService {
@@ -18,6 +20,8 @@ public interface ITransactionService {
     ApiResult<List<TransactionResponse>> getTransactionsByCategory(Long categoryId);
 
     ApiResult<BigDecimal> getTotalAmountByCategoryAndMonth(Long categoryId);
+
+    ApiResult<List<TransactionResponse>> getTransactionsByDate(LocalDate date);
 
     ApiResult<BigDecimal> calculateTotalIncome();
 

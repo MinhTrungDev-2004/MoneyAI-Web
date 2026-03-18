@@ -3,9 +3,12 @@ package com.datn.moneyai.services.implement;
 import lombok.RequiredArgsConstructor;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.stereotype.Service;
 import com.datn.moneyai.models.dtos.transaction.TransactionResponse;
 import com.datn.moneyai.models.entities.bases.TransactionEntity;
@@ -207,6 +210,37 @@ public class TransactionService implements ITransactionService {
                 .orElseThrow(() -> new UserMessageException("Không tìm thấy người dùng."));
         return ApiResult.success(transactionRepository.sumTotalAmountByCategoryAndMonth(categoryId, user.getId()),
                 "Lấy tổng số tiền theo danh mục và tháng thành công");
+    }
+
+    @Override
+    public ApiResult<List<TransactionResponse>> getTransactionsByDate(LocalDate date) {
+        if (date == null) {
+            throw new UserMessageException("Thiếu ngày cần tra cứu");
+        }
+
+        // Lấy thông tin user hiện tại
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new UserMessageException("Không tìm thấy người dùng."));
+
+        // Gọi hàm mới trong Repository
+        List<TransactionEntity> list = transactionRepository.findAllByUserAndDate(user.getId(), date);
+
+        // Map dữ liệu sang Response
+        List<TransactionResponse> responseList = list.stream().map(t -> {
+            CategoryEntity c = t.getCategory();
+            return TransactionResponse.builder()
+                    .id(t.getId())
+                    .categoryId(c != null ? c.getId() : null)
+                    .categoryName(c != null ? c.getName() : null)
+                    .categoryType(c != null ? c.getType() : null)
+                    .amount(t.getTotalAmount())
+                    .transactionDate(t.getTransactionDate())
+                    .note(t.getNote())
+                    .build();
+        }).toList();
+
+        return ApiResult.success(responseList, "Lấy danh sách giao dịch theo ngày thành công");
     }
 
     /**
