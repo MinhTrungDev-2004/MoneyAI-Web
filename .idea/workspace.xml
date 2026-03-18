@@ -69,7 +69,7 @@
     "Spring Boot.DiscoveryServerApplication.executor": "Run",
     "Spring Boot.GatewayServiceApplication.executor": "Run",
     "Spring Boot.UserServiceApplication.executor": "Run",
-    "git-widget-placeholder": "Merging main",
+    "git-widget-placeholder": "main",
     "kotlin-language-version-configured": "true",
     "last_opened_file_path": "D:/BE/datn-microservice",
     "node.js.detected.package.eslint": "true",
@@ -108,7 +108,7 @@
             <map>
               <entry key="DiscoveryServerApplication" value="STOPPED" />
               <entry key="GatewayServiceApplication" value="STOPPED" />
-              <entry key="UserServiceApplication" value="STOPPED" />
+              <entry key="UserServiceApplication" value="FAILED" />
             </map>
           </value>
         </entry>
