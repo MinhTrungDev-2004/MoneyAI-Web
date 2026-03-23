@@ -1,8 +1,10 @@
 package com.datn.moneyai.services.interfaces;
 
 import java.util.List;
+
 import com.datn.moneyai.models.dtos.category.CategoryRequest;
 import com.datn.moneyai.models.dtos.category.CategoryResponse;
+import com.datn.moneyai.models.dtos.category.CategoryTotalAmount;
 import com.datn.moneyai.models.global.ApiResult;
 
 public interface ICategoryService {
@@ -13,4 +15,6 @@ public interface ICategoryService {
     ApiResult<List<CategoryResponse>> getsCategory();
 
     ApiResult<Void> deleteCategory(Long id);
+
+    ApiResult<List<CategoryTotalAmount>> getTotalAmountByAllCategoriesThisMonth();
 }

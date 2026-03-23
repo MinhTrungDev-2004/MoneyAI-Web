@@ -19,7 +19,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/notifications")
-@Tag(name = "Thông Báo - NotificationController", description = "Quản lý thông báo của hệ thống gửi đến người dùng")
+@Tag(name = "NotificationController", description = "Quản lý thông báo của hệ thống gửi đến người dùng")
 public class NotificationController {
 
     private final INotificationService notificationService;

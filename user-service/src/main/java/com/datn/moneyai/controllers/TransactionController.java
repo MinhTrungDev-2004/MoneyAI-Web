@@ -21,7 +21,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/transactions")
-@Tag(name = "Giao Dịch - TransactionController", description = "Quản lý thu chi và lịch sử giao dịch")
+@Tag(name = "TransactionController", description = "Quản lý thu chi và lịch sử giao dịch")
 public class TransactionController {
 
     private final ITransactionService transactionService;
@@ -60,13 +60,6 @@ public class TransactionController {
     public ResponseEntity<ApiResult<List<TransactionResponse>>> getTransactionsByCategory(
             @PathVariable Long categoryId) {
         return ResponseEntity.ok(transactionService.getTransactionsByCategory(categoryId));
-    }
-
-    @Operation(summary = "Tính tổng số tiền giao dịch của một danh mục trong tháng hiện tại")
-    @GetMapping("/categories/{categoryId}/total-amount")
-    public ResponseEntity<ApiResult<BigDecimal>> getTotalAmountByCategoryAndMonth(
-            @PathVariable Long categoryId) {
-        return ResponseEntity.ok(transactionService.getTotalAmountByCategoryAndMonth(categoryId));
     }
 
     @Operation(summary = "Tính tổng thu nhập trong tháng hiện tại")

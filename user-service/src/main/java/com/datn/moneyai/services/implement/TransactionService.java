@@ -7,7 +7,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import com.datn.moneyai.models.dtos.transaction.TransactionResponse;
@@ -35,10 +34,13 @@ public class TransactionService implements ITransactionService {
     /**
      * Tạo mới một giao dịch chi tiêu hoặc thu nhập.
      *
-     * @param request Dữ liệu đầu vào chứa thông tin giao dịch cần tạo (số tiền, ngày giao dịch, ghi
+     * @param request Dữ liệu đầu vào chứa thông tin giao dịch cần tạo (số tiền,
+     *                ngày giao dịch, ghi
      *                chú, danh mục).
-     * @return ApiResult mang theo đối tượng TransactionResponse vừa được tạo thành công.
-     * @throws UserMessageException Nếu dữ liệu yêu cầu không hợp lệ hoặc người dùng không có quyền sử
+     * @return ApiResult mang theo đối tượng TransactionResponse vừa được tạo thành
+     * công.
+     * @throws UserMessageException Nếu dữ liệu yêu cầu không hợp lệ hoặc người dùng
+     *                              không có quyền sử
      *                              dụng danh mục.
      */
     @Override
@@ -71,7 +73,8 @@ public class TransactionService implements ITransactionService {
         TransactionEntity transaction = TransactionEntity.builder().totalAmount(request.getAmount())
                 .note(request.getNote()).transactionDate(
                         request.getTransactionDate() != null ? request.getTransactionDate()
-                                : LocalDateTime.now().toLocalDate()).category(category).user(user)
+                                : LocalDateTime.now().toLocalDate())
+                .category(category).user(user)
                 .source(TransactionSource.MANUAL.name()).build();
 
         TransactionEntity savedTransaction = transactionRepository.save(transaction);
@@ -88,9 +91,11 @@ public class TransactionService implements ITransactionService {
      * Cập nhật thông tin một giao dịch chi tiêu hoặc thu nhập.
      *
      * @param id      ID của giao dịch cần cập nhật.
-     * @param request Dữ liệu đầu vào chứa thông tin giao dịch cần cập nhật (số tiền, ngày giao dịch,
+     * @param request Dữ liệu đầu vào chứa thông tin giao dịch cần cập nhật (số
+     *                tiền, ngày giao dịch,
      *                ghi chú, danh mục).
-     * @return ApiResult mang theo đối tượng TransactionResponse vừa được cập nhật thàng
+     * @return ApiResult mang theo đối tượng TransactionResponse vừa được cập nhật
+     * thàng
      */
     @Override
     public ApiResult<TransactionResponse> updateTransaction(Long id,
@@ -143,7 +148,8 @@ public class TransactionService implements ITransactionService {
      *
      * @param id ID của giao dịch cần xóa.
      * @return ApiResult mang theo thông báo kết quả xóa.
-     * @throws UserMessageException Nếu ID không hợp lệ hoặc giao dịch không tồn tại hoặc đã bị xóa.
+     * @throws UserMessageException Nếu ID không hợp lệ hoặc giao dịch không tồn tại
+     *                              hoặc đã bị xóa.
      */
     @Override
     public ApiResult<Void> deleteTransaction(Long id) {
@@ -163,7 +169,8 @@ public class TransactionService implements ITransactionService {
      * Lấy danh sách các giao dịch chi tiêu hoặc thu nhập theo danh mục.
      *
      * @param categoryId ID của danh mục cần lấy giao dịch.
-     * @return ApiResult mang theo danh sách TransactionResponse của các giao dịch thuộc danh mục,
+     * @return ApiResult mang theo danh sách TransactionResponse của các giao dịch
+     * thuộc danh mục,
      * hoặc lỗi nếu có vấn đề với dữ liệu yêu cầu hoặc quyền truy cập.
      */
 
@@ -187,25 +194,6 @@ public class TransactionService implements ITransactionService {
         return ApiResult.success(responseList, "Lấy danh sách giao dịch theo danh mục thành công");
     }
 
-    /**
-     * Lấy tổng số tiền của giao dịch theo danh mục trong tháng hiện tại
-     *
-     * @param categoryId ID của danh mục cần lấy tổng số tiền.
-     * @return ApiResult mang theo tổng số tiền của các giao dịch thuộc danh mục trong tháng hiện tại,
-     * hoặc lỗi nếu có vấn đề với dữ liệu yêu cầu hoặc quyền truy cập.
-     */
-    @Override
-    public ApiResult<BigDecimal> getTotalAmountByCategoryAndMonth(Long categoryId) {
-        if (categoryId == null) {
-            throw new UserMessageException("Thiếu id danh mục");
-        }
-        String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new UserMessageException("Không tìm thấy người dùng."));
-        return ApiResult.success(
-                transactionRepository.sumTotalAmountByCategoryAndMonth(categoryId, user.getId()),
-                "Lấy tổng số tiền theo danh mục và tháng thành công");
-    }
 
     @Override
     public ApiResult<List<TransactionResponse>> getTransactionsByDate(LocalDate date) {
@@ -236,7 +224,8 @@ public class TransactionService implements ITransactionService {
     /**
      * Lấy tổng số tiền thu nhập của người dùng trong tháng hiện tại
      *
-     * @return ApiResult mang theo tổng số tiền thu nhập của người dùng trong tháng hiện tại, hoặc lỗi
+     * @return ApiResult mang theo tổng số tiền thu nhập của người dùng trong tháng
+     * hiện tại, hoặc lỗi
      * nếu có vấn đề với quyền truy cập.
      */
     @Override
@@ -251,7 +240,8 @@ public class TransactionService implements ITransactionService {
     /**
      * Lấy tổng số tiền chi tiêu của người dùng theo danh mục trong tháng hiện tại
      *
-     * @return ApiResult mang theo tổng số tiền chi tiêu của người dùng trong tháng hiện tại, hoặc lỗi
+     * @return ApiResult mang theo tổng số tiền chi tiêu của người dùng trong tháng
+     * hiện tại, hoặc lỗi
      * nếu có vấn đề với quyền truy cập.
      */
     @Override

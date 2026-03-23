@@ -3,6 +3,7 @@ package com.datn.moneyai.services.implement;
 import com.datn.moneyai.exceptions.UserMessageException;
 import com.datn.moneyai.models.dtos.category.CategoryRequest;
 import com.datn.moneyai.models.dtos.category.CategoryResponse;
+import com.datn.moneyai.models.dtos.category.CategoryTotalAmount;
 import com.datn.moneyai.models.entities.bases.CategoryEntity;
 import com.datn.moneyai.models.entities.bases.User;
 import com.datn.moneyai.models.entities.enums.CategoryType;
@@ -11,8 +12,10 @@ import com.datn.moneyai.repositories.CategoryRepository;
 import com.datn.moneyai.repositories.UserRepository;
 import com.datn.moneyai.services.interfaces.ICategoryService;
 import lombok.RequiredArgsConstructor;
+
 import java.util.List;
 import java.util.stream.Collectors;
+
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -28,7 +31,7 @@ public class CategoryService implements ICategoryService {
      * @param request Dữ liệu đầu vào chứa thông tin danh mục cần tạo (tên, loại,
      *                biểu tượng, mã màu).
      * @return ApiResult mang theo đối tượng CategoryResponse vừa được tạo thành
-     *         công.
+     * công.
      * @throws UserMessageException Nếu người dùng không tồn tại hoặc loại danh mục
      *                              không hợp lệ.
      */
@@ -135,6 +138,30 @@ public class CategoryService implements ICategoryService {
                         .colorCode(category.getColorCode())
                         .build())
                 .collect(Collectors.toList()), "Lấy danh mục thành công");
+    }
+
+    @Override
+    public ApiResult<List<CategoryTotalAmount>> getTotalAmountByAllCategoriesThisMonth() {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new UserMessageException("Không tìm thấy người dùng."));
+
+        List<Object[]> rawResults = categoryRepository.sumTotalAmountByAllCategoriesInMonth(user.getId());
+        
+        List<CategoryTotalAmount> totals = rawResults.stream().map(row -> {
+            return CategoryTotalAmount.builder()
+                    .categoryId(((Number) row[0]).longValue())
+                    .categoryName((String) row[1])
+                    .categoryType((String) row[2])
+                    .icon((String) row[3])
+                    .colorCode((String) row[4])
+                    .totalAmount(new java.math.BigDecimal(row[5].toString()))
+                    .build();
+        }).collect(Collectors.toList());
+
+        return ApiResult.success(
+                totals,
+                "Lấy tổng số tiền của tất cả danh mục trong tháng thành công");
     }
 
     /**

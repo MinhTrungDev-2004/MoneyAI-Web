@@ -27,7 +27,7 @@ import jakarta.validation.Valid;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/auth")
-@Tag(name = "Xác Thực - AuthController", description = "Quản lý đăng nhập, đăng ký và phiên hoạt động của người dùng")
+@Tag(name = "AuthController", description = "Quản lý đăng nhập, đăng ký và phiên hoạt động của người dùng")
 public class AuthController {
 
     private final AuthenticationManager authenticationManager;

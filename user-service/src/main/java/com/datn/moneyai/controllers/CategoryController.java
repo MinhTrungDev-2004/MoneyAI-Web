@@ -2,6 +2,7 @@ package com.datn.moneyai.controllers;
 
 import com.datn.moneyai.models.dtos.category.CategoryRequest;
 import com.datn.moneyai.models.dtos.category.CategoryResponse;
+import com.datn.moneyai.models.dtos.category.CategoryTotalAmount;
 import com.datn.moneyai.models.global.ApiResult;
 import com.datn.moneyai.services.interfaces.ICategoryService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -17,7 +18,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/categories")
-@Tag(name = "Danh Mục - CategoryController", description = "Quản lý danh mục thu chi của người dùng")
+@Tag(name = "CategoryController", description = "Quản lý danh mục thu chi của người dùng")
 public class CategoryController {
 
     private final ICategoryService categoryService;
@@ -41,6 +42,12 @@ public class CategoryController {
     @GetMapping
     public ResponseEntity<ApiResult<List<CategoryResponse>>> getAllCategory() {
         return ResponseEntity.ok(categoryService.getsCategory());
+    }
+
+    @Operation(summary = "Tính tổng số tiền giao dịch của TẤT CẢ danh mục trong tháng hiện tại")
+    @GetMapping("/total-amount")
+    public ResponseEntity<ApiResult<List<CategoryTotalAmount>>> getTotalAmountByAllCategoriesThisMonth() {
+        return ResponseEntity.ok(categoryService.getTotalAmountByAllCategoriesThisMonth());
     }
 
     @Operation(summary = "Xóa một danh mục")

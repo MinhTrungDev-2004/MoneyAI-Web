@@ -17,7 +17,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/budgets")
-@Tag(name = "Mục Tiêu Tiết Kiệm - BudgetController", description = "Quản lý ngân sách và mục tiêu tiết kiệm")
+@Tag(name = "BudgetController", description = "Quản lý ngân sách và mục tiêu tiết kiệm")
 public class BudgetController {
 
     private final IBudgetService budgetService;
