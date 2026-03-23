@@ -22,9 +22,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtTokenProvider tokenProvider;
     private final UserDetailsService userDetailsService;
     private static final List<String> EXCLUDED_PATHS = List.of(
-            "/public/auth/register",
-            "/public/auth/login",
-            "/public/auth/logout");
+            "/api/v1/auth/register",
+            "/api/v1/auth/login",
+            "/api/v1/auth/logout");
 
     /**
      * Lọc JWT từ header Authorization và thiết lập Authentication trong
@@ -78,7 +78,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     /**
      * Kiểm tra xem đường dẫn có thuộc danh sách các đường dẫn cần bỏ qua hay không.
-     * 
+     *
      * @param path Đường dẫn của yêu cầu hiện tại.
      * @return true nếu đường dẫn nên bỏ qua, false nếu không nên bỏ qua.
      */

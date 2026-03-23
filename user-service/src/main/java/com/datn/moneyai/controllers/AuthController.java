@@ -27,21 +27,21 @@ import jakarta.validation.Valid;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/auth")
-@Tag(name = "Authentication", description = "Quản lý xác thực người dùng")
+@Tag(name = "Xác Thực - AuthController", description = "Quản lý đăng nhập, đăng ký và phiên hoạt động của người dùng")
 public class AuthController {
 
     private final AuthenticationManager authenticationManager;
     private final ITokenService tokenService;
     private final IAuthService authService;
 
-    @PostMapping("/register")
     @Operation(summary = "Đăng ký tài khoản mới")
+    @PostMapping("/register")
     public ResponseEntity<ApiResult<Long>> register(@Valid @RequestBody UserCreateRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(authService.createUser(request));
     }
 
+    @Operation(summary = "Đăng nhập", description = "Trả về AccessToken trong Body và RefreshToken ẩn an toàn trong HttpOnly Cookie")
     @PostMapping("/login")
-    @Operation(summary = "Đăng nhập", description = "Trả về AccessToken trong Body và RefreshToken ẩn an toàn trong Cookie")
     public ResponseEntity<ApiResult<TokenResponse>> login(@Valid @RequestBody LoginRequest request) {
         try {
             Authentication authentication = authenticationManager.authenticate(
@@ -51,10 +51,10 @@ public class AuthController {
             UserDetails userDetails = (UserDetails) authentication.getPrincipal();
             ApiResult<TokenResponse> tokens = tokenService.generateTokens(userDetails);
 
-            // CHUẨN: Lưu đúng RefreshToken vào Cookie có tên là refreshToken
+            // Lưu RefreshToken vào Cookie
             ResponseCookie cookie = ResponseCookie.from("refreshToken", tokens.getData().getRefreshToken())
-                    .httpOnly(true)  // Giúp chống hack XSS
-                    .secure(false)   // Khi nào deploy lên host có HTTPS thì đổi thành true
+                    .httpOnly(true)
+                    .secure(false)
                     .path("/")
                     .maxAge(7 * 24 * 60 * 60) // Sống 7 ngày
                     .sameSite("Strict")
@@ -62,7 +62,6 @@ public class AuthController {
 
             return ResponseEntity.ok()
                     .header(HttpHeaders.SET_COOKIE, cookie.toString())
-                    // Trả cục token (chứa AccessToken) về cho frontend qua body
                     .body(ApiResult.success(tokens.getData(), "Đăng nhập thành công"));
         } catch (BadCredentialsException ex) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
@@ -70,16 +69,16 @@ public class AuthController {
         }
     }
 
-    @GetMapping("/info")
-    @Operation(summary = "Lấy thông tin tài khoản đang đăng nhập")
+    @Operation(summary = "Lấy thông tin tài khoản đang đăng nhập", description = "Cần gửi kèm Access Token trên Header")
+    @GetMapping("/me")
     public ResponseEntity<ApiResult<LoginGetResponse>> getCurrentUser(
             @AuthenticationPrincipal UserPrincipal userPrincipal) {
         ApiResult<LoginGetResponse> result = tokenService.getUserInfo(userPrincipal.getId());
         return ResponseEntity.ok(result);
     }
 
-    @PostMapping("/logout")
     @Operation(summary = "Đăng xuất", description = "Xóa RefreshToken trong Cookie và vô hiệu hóa AccessToken")
+    @PostMapping("/logout")
     public ResponseEntity<ApiResult<Void>> logout(
             @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String authHeader,
             @CookieValue(name = "refreshToken", required = false) String refreshToken) {
@@ -88,16 +87,14 @@ public class AuthController {
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             accessToken = authHeader.substring(7);
         }
-
-        // Gọi service xử lý vô hiệu hóa cả 2 token này
         authService.logout(accessToken, refreshToken);
 
-        // Xóa cookie refreshToken trên trình duyệt của người dùng
+        // Xóa cookie bằng cách set maxAge = 0
         ResponseCookie clearCookie = ResponseCookie.from("refreshToken", "")
                 .httpOnly(true)
-                .secure(false)
+                .secure(false) // Tương tự như lúc set cookie
                 .path("/")
-                .maxAge(0) // Set bằng 0 để Cookie tự hủy
+                .maxAge(0)
                 .build();
 
         return ResponseEntity.ok()

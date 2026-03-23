@@ -16,10 +16,9 @@ import java.util.List;
 public class JwtAuthGlobalFilter implements GlobalFilter, Ordered {
 
     private static final List<String> EXCLUDED_PATHS = List.of(
-            "/public/auth/login",
-            "/public/auth/register",
-            "/public/auth/token",
-            "/public/auth/logout");
+            "/api/v1/auth/login",
+            "/api/v1/auth/register",
+            "/api/v1/auth/logout");
 
     @Autowired
     private JwtTokenProvider tokenProvider;
