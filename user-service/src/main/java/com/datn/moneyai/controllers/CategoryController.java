@@ -20,7 +20,7 @@ import java.util.List;
 @RequestMapping("/api/v1/categories")
 @Tag(name = "CategoryController", description = "Quản lý danh mục thu chi của người dùng")
 public class CategoryController {
-
+    
     private final ICategoryService categoryService;
 
     @Operation(summary = "Tạo mới một danh mục")
@@ -44,7 +44,7 @@ public class CategoryController {
         return ResponseEntity.ok(categoryService.getsCategory());
     }
 
-    @Operation(summary = "Tính tổng số tiền giao dịch của TẤT CẢ danh mục trong tháng hiện tại")
+    @Operation(summary = "Tính tổng số tiền giao dịch của tất cả danh mục trong tháng hiện tại")
     @GetMapping("/total-amount")
     public ResponseEntity<ApiResult<List<CategoryTotalAmount>>> getTotalAmountByAllCategoriesThisMonth() {
         return ResponseEntity.ok(categoryService.getTotalAmountByAllCategoriesThisMonth());
