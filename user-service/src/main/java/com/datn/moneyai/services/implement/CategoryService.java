@@ -136,6 +136,8 @@ public class CategoryService implements ICategoryService {
                         .type(category.getType())
                         .icon(category.getIcon())
                         .colorCode(category.getColorCode())
+                        .createdAt(category.getCreatedAt())
+                        .updatedAt(category.getUpdatedAt())
                         .build())
                 .collect(Collectors.toList()), "Lấy danh mục thành công");
     }
@@ -147,7 +149,7 @@ public class CategoryService implements ICategoryService {
                 .orElseThrow(() -> new UserMessageException("Không tìm thấy người dùng."));
 
         List<Object[]> rawResults = categoryRepository.sumTotalAmountByAllCategoriesInMonth(user.getId());
-        
+
         List<CategoryTotalAmount> totals = rawResults.stream().map(row -> {
             return CategoryTotalAmount.builder()
                     .categoryId(((Number) row[0]).longValue())

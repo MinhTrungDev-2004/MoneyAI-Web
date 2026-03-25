@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.YearMonth;
 import java.util.List;
 import java.util.Objects;
 
@@ -39,17 +40,19 @@ public class TransactionService implements ITransactionService {
     }
 
     private TransactionResponse mapToResponse(TransactionEntity transactionEntity) {
-        CategoryEntity categoryEntity = transactionEntity.getCategory();
         return TransactionResponse.builder()
                 .id(transactionEntity.getId())
-                .categoryId(categoryEntity != null ? categoryEntity.getId() : null)
-                .categoryName(categoryEntity != null ? categoryEntity.getName() : null)
-                .categoryType(categoryEntity != null ? categoryEntity.getType() : null)
+                .categoryId(transactionEntity.getCategory().getId())
+                .categoryName(transactionEntity.getCategory().getName())
+                .iconCategory(transactionEntity.getCategory().getIcon())
+                .colorCode(transactionEntity.getCategory().getColorCode())
+                .categoryType(transactionEntity.getCategory().getType())
                 .amount(transactionEntity.getTotalAmount())
                 .transactionDate(transactionEntity.getTransactionDate())
                 .note(transactionEntity.getNote())
                 .build();
     }
+
 
     @Override
     public ApiResult<TransactionResponse> createTransaction(TransactionRequest request) {
@@ -143,15 +146,20 @@ public class TransactionService implements ITransactionService {
     }
 
     @Override
-    public ApiResult<List<TransactionResponse>> getTransactionsByDate(LocalDate date) {
-        if (date == null) throw new UserMessageException("Thiếu ngày cần tra cứu");
+    public ApiResult<List<TransactionResponse>> getTransactionsByMonth(YearMonth monthYear) {
+        if (monthYear == null) throw new UserMessageException("Thiếu tháng cần tra cứu");
 
         User user = getCurrentUser();
 
-        List<TransactionEntity> list = transactionRepository.findAllByUserAndDate(user.getId(), date);
+        LocalDate startDate = monthYear.atDay(1);
+        LocalDate endDate = monthYear.atEndOfMonth();
+
+        List<TransactionEntity> list = transactionRepository.findAllByUserAndDateBetween(
+                user.getId(), startDate, endDate);
+
         List<TransactionResponse> responseList = list.stream().map(this::mapToResponse).toList();
 
-        return ApiResult.success(responseList, "Lấy danh sách giao dịch theo ngày thành công");
+        return ApiResult.success(responseList, "Lấy danh sách giao dịch theo tháng thành công");
     }
 
     @Override

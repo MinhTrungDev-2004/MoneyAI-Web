@@ -92,7 +92,7 @@ public class AuthController {
         // Xóa cookie bằng cách set maxAge = 0
         ResponseCookie clearCookie = ResponseCookie.from("refreshToken", "")
                 .httpOnly(true)
-                .secure(false) // Tương tự như lúc set cookie
+                .secure(false)
                 .path("/")
                 .maxAge(0)
                 .build();

@@ -7,6 +7,7 @@ import com.datn.moneyai.models.global.ApiResult;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.List;
 
 public interface ITransactionService {
@@ -19,7 +20,7 @@ public interface ITransactionService {
 
     ApiResult<List<TransactionResponse>> getTransactionsByCategory(Long categoryId);
 
-    ApiResult<List<TransactionResponse>> getTransactionsByDate(LocalDate date);
+    ApiResult<List<TransactionResponse>> getTransactionsByMonth(YearMonth monthYear);
 
     ApiResult<BigDecimal> calculateTotalIncome();
 

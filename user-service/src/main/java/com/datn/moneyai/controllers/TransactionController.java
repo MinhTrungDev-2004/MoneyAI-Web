@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,15 +17,16 @@ import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.List;
 
 @RestController
-@RequiredArgsConstructor
 @RequestMapping("/api/v1/transactions")
 @Tag(name = "TransactionController", description = "Quản lý thu chi và lịch sử giao dịch")
 public class TransactionController {
 
-    private final ITransactionService transactionService;
+    @Autowired
+    private ITransactionService transactionService;
 
     @Operation(summary = "Tạo mới một giao dịch")
     @PostMapping
@@ -48,11 +50,11 @@ public class TransactionController {
         return ResponseEntity.ok(transactionService.deleteTransaction(id));
     }
 
-    @Operation(summary = "Lấy danh sách giao dịch (Lọc theo ngày)")
-    @GetMapping
-    public ResponseEntity<ApiResult<List<TransactionResponse>>> getTransactionsByDate(
-            @RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
-        return ResponseEntity.ok(transactionService.getTransactionsByDate(date));
+    @Operation(summary = "Lấy danh sách giao dịch theo tháng")
+    @GetMapping("/by-month")
+    public ResponseEntity<ApiResult<List<TransactionResponse>>> getTransactionsByMonth(
+            @RequestParam("monthYear") @DateTimeFormat(pattern = "M/yyyy") YearMonth monthYear) {
+        return ResponseEntity.ok(transactionService.getTransactionsByMonth(monthYear));
     }
 
     @Operation(summary = "Lấy danh sách giao dịch theo danh mục")

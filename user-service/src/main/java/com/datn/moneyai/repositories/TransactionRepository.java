@@ -31,10 +31,15 @@ public interface TransactionRepository extends JpaRepository<TransactionEntity, 
     BigDecimal sumTotalAmountByCategoryAndMonth(@Param("categoryId") Long categoryId,
                                                 @Param("userId") Long userId);
 
-    @Query(value = "SELECT * FROM transactions WHERE user_id = :userId AND DATE(transaction_date) = :transactionDate", nativeQuery = true)
-    List<TransactionEntity> findAllByUserAndDate(
+    @Query("SELECT t FROM TransactionEntity t " +
+            "JOIN FETCH t.category c " +
+            "WHERE t.user.id = :userId " +
+            "AND t.transactionDate >= :startDate " +
+            "AND t.transactionDate <= :endDate")
+    List<TransactionEntity> findAllByUserAndDateBetween(
             @Param("userId") Long userId,
-            @Param("transactionDate") LocalDate transactionDate);
+            @Param("startDate") LocalDate startDate,
+            @Param("endDate") LocalDate endDate);
 
     @Query(value = "SELECT COALESCE(SUM(t.total_amount), 0) FROM transactions t " +
             "INNER JOIN categories c ON t.category_id = c.id " +

@@ -23,6 +23,8 @@ public class TransactionResponse {
 
     private String categoryName;
 
+    private String colorCode;
+
     private String iconCategory;
 
     private CategoryType categoryType;

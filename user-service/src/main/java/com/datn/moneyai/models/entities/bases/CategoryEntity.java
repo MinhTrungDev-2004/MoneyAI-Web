@@ -4,14 +4,14 @@ import com.datn.moneyai.models.entities.enums.CategoryType;
 import jakarta.persistence.*;
 import lombok.*;
 
+@Data
 @Entity
 @Table(name = "categories")
-@Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class CategoryEntity extends BaseEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -28,5 +28,6 @@ public class CategoryEntity extends BaseEntity {
     private CategoryType type;
 
     private String icon;
+
     private String colorCode;
 }
