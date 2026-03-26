@@ -9,6 +9,7 @@ import java.time.LocalDate;
 @Data
 @Entity
 @Table(name = "saving_transactions")
+@EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder

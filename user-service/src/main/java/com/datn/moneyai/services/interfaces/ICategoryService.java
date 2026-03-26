@@ -4,7 +4,6 @@ import java.util.List;
 
 import com.datn.moneyai.models.dtos.category.CategoryRequest;
 import com.datn.moneyai.models.dtos.category.CategoryResponse;
-import com.datn.moneyai.models.dtos.category.CategoryTotalAmount;
 import com.datn.moneyai.models.global.ApiResult;
 
 public interface ICategoryService {

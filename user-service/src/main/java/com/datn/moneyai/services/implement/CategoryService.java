@@ -33,7 +33,7 @@ public class CategoryService implements ICategoryService {
      * @param request Dữ liệu đầu vào chứa thông tin danh mục cần tạo (tên, loại,
      *                biểu tượng, mã màu).
      * @return ApiResult mang theo đối tượng CategoryResponse vừa được tạo thành
-     * công.
+     *         công.
      * @throws UserMessageException Nếu người dùng không tồn tại hoặc loại danh mục
      *                              không hợp lệ.
      */
@@ -61,15 +61,15 @@ public class CategoryService implements ICategoryService {
                 .type(type)
                 .user(user)
                 .build();
-        CategoryEntity saved = categoryRepository.save(newCategory);
+        CategoryEntity categoryEntity = categoryRepository.save(newCategory);
         return ApiResult.success(CategoryResponse.builder()
-                .id(saved.getId())
-                .name(saved.getName())
-                .type(saved.getType())
-                .icon(saved.getIcon())
-                .colorCode(saved.getColorCode())
-                .createdAt(saved.getCreatedAt())
-                .updatedAt(saved.getUpdatedAt())
+                .id(categoryEntity.getId())
+                .name(categoryEntity.getName())
+                .type(categoryEntity.getType())
+                .icon(categoryEntity.getIcon())
+                .colorCode(categoryEntity.getColorCode())
+                .createdAt(categoryEntity.getCreatedAt())
+                .updatedAt(categoryEntity.getUpdatedAt())
                 .build(), "Tạo danh mục thành công");
     }
 

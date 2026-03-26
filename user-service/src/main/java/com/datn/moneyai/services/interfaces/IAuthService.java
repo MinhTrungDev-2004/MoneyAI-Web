@@ -1,6 +1,5 @@
 package com.datn.moneyai.services.interfaces;
 
-import com.datn.moneyai.models.dtos.auth.LoginGetResponse;
 import com.datn.moneyai.models.dtos.users.UserCreateRequest;
 import com.datn.moneyai.models.dtos.users.UserGetsResponse;
 import com.datn.moneyai.models.global.ApiResult;
