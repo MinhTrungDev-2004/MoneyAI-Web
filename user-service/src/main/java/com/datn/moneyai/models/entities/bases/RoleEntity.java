@@ -2,22 +2,15 @@ package com.datn.moneyai.models.entities.bases;
 
 import com.datn.moneyai.models.entities.enums.RoleName;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
+@EqualsAndHashCode(callSuper = true)
+@Data
 @Entity
 @Table(name = "roles")
-@Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Role {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
-
+public class RoleEntity extends BaseEntity {
     @Enumerated(EnumType.STRING)
     @Column(length = 20, unique = true)
     private RoleName name;

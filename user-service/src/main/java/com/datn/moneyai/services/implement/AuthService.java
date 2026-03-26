@@ -5,9 +5,9 @@ import com.datn.moneyai.models.constant.DefaultCategoryData;
 import com.datn.moneyai.models.dtos.users.UserCreateRequest;
 import com.datn.moneyai.models.dtos.users.UserGetsResponse;
 import com.datn.moneyai.models.entities.bases.CategoryEntity;
-import com.datn.moneyai.models.entities.bases.Role;
-import com.datn.moneyai.models.entities.bases.User;
-import com.datn.moneyai.models.entities.bases.UserRole;
+import com.datn.moneyai.models.entities.bases.RoleEntity;
+import com.datn.moneyai.models.entities.bases.UserEntity;
+import com.datn.moneyai.models.entities.bases.UserRoleEntity;
 import com.datn.moneyai.models.entities.enums.CategoryType;
 import com.datn.moneyai.models.entities.enums.RoleName;
 import com.datn.moneyai.models.global.ApiResult;
@@ -21,9 +21,11 @@ import com.datn.moneyai.services.interfaces.IAuthService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
@@ -32,13 +34,26 @@ import java.util.Set;
 @RequiredArgsConstructor
 @Slf4j
 public class AuthService implements IAuthService {
-    private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
-    private final RoleRepository roleRepository;
-    private final JwtTokenProvider jwtTokenProvider;
-    private final TokenBlackListRepository tokenBlackListRepository;
-    private final StringRedisTemplate redisTemplate;
-    private final CategoryRepository categoryRepository;
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private RoleRepository roleRepository;
+
+    @Autowired
+    private JwtTokenProvider jwtTokenProvider;
+
+    @Autowired
+    private TokenBlackListRepository tokenBlackListRepository;
+
+    @Autowired
+    private StringRedisTemplate redisTemplate;
+
+    @Autowired
+    private CategoryRepository categoryRepository;
 
     /**
      * Tạo mới một tài khoản người dùng hoặc quản trị viên (Admin).
@@ -58,21 +73,21 @@ public class AuthService implements IAuthService {
 
         String hashedPassword = passwordEncoder.encode(request.getPassword());
 
-        User newUser = User.builder()
+        UserEntity newUser = UserEntity.builder()
                 .email(request.getEmail())
                 .password(hashedPassword)
                 .isActive(true)
                 .build();
 
         RoleName targetRoleName = (request.getRole() != null) ? request.getRole() : RoleName.USER;
-        Role userRoleEntity = roleRepository.findByName(targetRoleName)
+        RoleEntity userRoleEntityEntity = roleRepository.findByName(targetRoleName)
                 .orElseThrow(() -> new UserMessageException("Lỗi hệ thống: Không tìm thấy quyền (" + targetRoleName + ")."));
 
-        UserRole userRole = UserRole.builder()
+        UserRoleEntity userRoleEntity = UserRoleEntity.builder()
                 .user(newUser)
-                .role(userRoleEntity)
+                .roleEntity(userRoleEntityEntity)
                 .build();
-        newUser.setUserRoles(Set.of(userRole));
+        newUser.setUserRoleEntities(Set.of(userRoleEntity));
 
         userRepository.save(newUser);
 
@@ -100,13 +115,13 @@ public class AuthService implements IAuthService {
      */
     @Override
     public ApiResult<List<UserGetsResponse>> getUser() {
-        List<User> users = userRepository.findByUserRoles_Role_NameNot(RoleName.USER);
+        List<UserEntity> users = userRepository.findByUserRoles_Role_NameNot(RoleName.USER);
 
         List<UserGetsResponse> responseList = users.stream()
                 .map(user -> UserGetsResponse.builder()
                         .id(user.getId())
                         .email(user.getEmail())
-                        .role(user.getUserRoles().stream().findFirst().map(ur -> ur.getRole().getName().name())
+                        .role(user.getUserRoleEntities().stream().findFirst().map(ur -> ur.getRoleEntity().getName().name())
                                 .orElse(null))
                         .avatarUrl(user.getAvatarUrl())
                         .defaultCurrency(user.getDefaultCurrency())

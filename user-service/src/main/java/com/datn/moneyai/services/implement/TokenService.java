@@ -2,7 +2,7 @@ package com.datn.moneyai.services.implement;
 
 import com.datn.moneyai.models.dtos.auth.LoginGetResponse;
 import com.datn.moneyai.models.dtos.auth.TokenResponse;
-import com.datn.moneyai.models.entities.bases.User;
+import com.datn.moneyai.models.entities.bases.UserEntity;
 import com.datn.moneyai.models.global.ApiResult;
 import com.datn.moneyai.models.security.JwtTokenProvider;
 import com.datn.moneyai.repositories.UserRepository;
@@ -20,7 +20,7 @@ public class TokenService implements ITokenService {
     private final JwtTokenProvider jwtTokenProvider;
     private final UserRepository userRepository;
     private final StringRedisTemplate redisTemplate;
-    
+
     @Override
     public ApiResult<TokenResponse> generateTokens(UserDetails userDetails) {
         String accessToken = jwtTokenProvider.generateAccessToken(userDetails);
@@ -42,14 +42,14 @@ public class TokenService implements ITokenService {
 
     @Override
     public ApiResult<LoginGetResponse> getUserInfo(Long userId) {
-        User user = userRepository.findById(userId)
+        UserEntity user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy người dùng với id: " + userId));
 
         LoginGetResponse response = LoginGetResponse.builder()
                 .fullName(user.getFullName())
                 .email(user.getEmail())
                 .avatarUrl(user.getAvatarUrl())
-                .role(user.getUserRoles().stream().findFirst().map(ur -> ur.getRole().getName().name()).orElse(null))
+                .role(user.getUserRoleEntities().stream().findFirst().map(ur -> ur.getRoleEntity().getName().name()).orElse(null))
                 .build();
 
         return ApiResult.success(response, "Lấy thông tin người dùng thành công");

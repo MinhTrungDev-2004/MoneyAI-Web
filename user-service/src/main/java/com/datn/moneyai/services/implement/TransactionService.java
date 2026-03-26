@@ -1,5 +1,6 @@
 package com.datn.moneyai.services.implement;
 
+import com.datn.moneyai.models.entities.bases.UserEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -16,7 +17,6 @@ import com.datn.moneyai.models.dtos.transaction.TransactionResponse;
 import com.datn.moneyai.models.dtos.transaction.TransactionUpdateRequest;
 import com.datn.moneyai.models.entities.bases.CategoryEntity;
 import com.datn.moneyai.models.entities.bases.TransactionEntity;
-import com.datn.moneyai.models.entities.bases.User;
 import com.datn.moneyai.models.entities.enums.TransactionSource;
 import com.datn.moneyai.models.global.ApiResult;
 import com.datn.moneyai.repositories.CategoryRepository;
@@ -37,7 +37,7 @@ public class TransactionService implements ITransactionService {
     @Autowired
     private UserRepository userRepository;
 
-    private User getCurrentUser() {
+    private UserEntity getCurrentUser() {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> new UserMessageException("Không tìm thấy người dùng."));
@@ -67,7 +67,7 @@ public class TransactionService implements ITransactionService {
         if (request.getTransactionDate() == null) throw new UserMessageException("Vui lòng chọn ngày giao dịch");
         if (request.getCategoryId() == null) throw new UserMessageException("Vui lòng chọn danh mục");
 
-        User user = getCurrentUser();
+        UserEntity user = getCurrentUser();
 
         CategoryEntity category = categoryRepository.findActiveCategoryById(request.getCategoryId())
                 .orElseThrow(() -> new UserMessageException("Không tìm thấy danh mục hoặc danh mục đã bị xóa!"));
@@ -94,7 +94,7 @@ public class TransactionService implements ITransactionService {
     public ApiResult<TransactionResponse> updateTransaction(Long id, TransactionUpdateRequest request) {
         if (id == null) throw new UserMessageException("Thiếu id giao dịch");
 
-        User user = getCurrentUser();
+        UserEntity user = getCurrentUser();
 
         TransactionEntity transactionEntity = transactionRepository.findActiveByIdAndUser(id, user.getId())
                 .orElseThrow(() -> new UserMessageException("Không tìm thấy giao dịch hoặc đã bị xóa!"));
@@ -130,7 +130,7 @@ public class TransactionService implements ITransactionService {
     @Override
     public ApiResult<Void> deleteTransaction(Long id) {
         if (id == null) throw new UserMessageException("Thiếu id giao dịch");
-        User user = getCurrentUser();
+        UserEntity user = getCurrentUser();
         TransactionEntity transactionEntity = transactionRepository.findActiveByIdAndUser(id, user.getId())
                 .orElseThrow(() -> new UserMessageException("Không tìm thấy giao dịch hoặc đã bị xóa!"));
         transactionRepository.delete(transactionEntity);
@@ -141,7 +141,7 @@ public class TransactionService implements ITransactionService {
     public ApiResult<List<TransactionResponse>> getTransactionsByCategory(Long categoryId) {
         if (categoryId == null) throw new UserMessageException("Thiếu id danh mục");
 
-        User user = getCurrentUser();
+        UserEntity user = getCurrentUser();
 
         List<TransactionEntity> list = transactionRepository.findAllActiveByCategoryAndUser(categoryId, user.getId());
         List<TransactionResponse> responseList = list.stream().map(this::mapToResponse).toList();
@@ -153,7 +153,7 @@ public class TransactionService implements ITransactionService {
     public ApiResult<List<TransactionResponse>> getTransactionsByMonth(YearMonth monthYear) {
         if (monthYear == null) throw new UserMessageException("Thiếu tháng cần tra cứu");
 
-        User user = getCurrentUser();
+        UserEntity user = getCurrentUser();
 
         LocalDate startDate = monthYear.atDay(1);
         LocalDate endDate = monthYear.atEndOfMonth();
@@ -171,7 +171,7 @@ public class TransactionService implements ITransactionService {
         if (year == null) {
             throw new UserMessageException("Thiếu năm cần tra cứu");
         }
-        User user = getCurrentUser();
+        UserEntity user = getCurrentUser();
         LocalDate startDate = year.atDay(1);
         LocalDate endDate = year.atMonth(12).atEndOfMonth();
         List<TransactionEntity> list = transactionRepository.findAllByUserAndDateBetween(

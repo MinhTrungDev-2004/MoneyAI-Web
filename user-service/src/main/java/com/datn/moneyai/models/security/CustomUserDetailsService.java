@@ -1,6 +1,6 @@
 package com.datn.moneyai.models.security;
 
-import com.datn.moneyai.models.entities.bases.User;
+import com.datn.moneyai.models.entities.bases.UserEntity;
 import com.datn.moneyai.repositories.UserRepository;
 
 import jakarta.transaction.Transactional;
@@ -29,15 +29,15 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Override
     @Transactional
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userRepository.findByEmail(username)
+        UserEntity user = userRepository.findByEmail(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username));
 
         return new UserPrincipal(
                 user.getId(),
                 user.getEmail(),
                 user.getPassword(),
-                user.getUserRoles().stream()
-                        .map(role -> new SimpleGrantedAuthority("ROLE_" + role.getRole().getName().name()))
+                user.getUserRoleEntities().stream()
+                        .map(role -> new SimpleGrantedAuthority("ROLE_" + role.getRoleEntity().getName().name()))
                         .collect(Collectors.toList()));
     }
 }

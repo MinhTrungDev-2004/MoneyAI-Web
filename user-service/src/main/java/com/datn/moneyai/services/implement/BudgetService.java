@@ -3,17 +3,19 @@ package com.datn.moneyai.services.implement;
 import com.datn.moneyai.exceptions.UserMessageException;
 import com.datn.moneyai.models.dtos.budget.BudgetRequest;
 import com.datn.moneyai.models.dtos.budget.BudgetResponse;
-import com.datn.moneyai.models.entities.bases.Budget;
+import com.datn.moneyai.models.entities.bases.BudgetEntity;
 import com.datn.moneyai.models.entities.bases.CategoryEntity;
-import com.datn.moneyai.models.entities.bases.User;
+import com.datn.moneyai.models.entities.bases.UserEntity;
 import com.datn.moneyai.models.global.ApiResult;
 import com.datn.moneyai.repositories.BudgetRepository;
 import com.datn.moneyai.repositories.CategoryRepository;
 import com.datn.moneyai.repositories.UserRepository;
 import com.datn.moneyai.services.interfaces.IBudgetService;
+
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -37,7 +39,7 @@ public class BudgetService implements IBudgetService {
     @Override
     public ApiResult<BudgetResponse> createBudget(BudgetRequest request) {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        User user = userRepository.findByEmail(email)
+        UserEntity user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UserMessageException("Không tìm thấy người dùng."));
 
         if (request.getCategoryId() == null) {
@@ -54,19 +56,19 @@ public class BudgetService implements IBudgetService {
         }
 
         budgetRepository.findByUserAndCategoryAndMonthAndYear(user.getId(), category.getId(),
-                request.getMonth(), request.getYear())
+                        request.getMonth(), request.getYear())
                 .ifPresent(b -> {
                     throw new UserMessageException("Ngân sách cho danh mục đã tồn tại trong tháng/năm này.");
                 });
 
-        Budget budget = Budget.builder()
+        BudgetEntity budgetEntity = BudgetEntity.builder()
                 .user(user)
                 .category(category)
                 .limitAmount(request.getLimitAmount())
                 .month(request.getMonth())
                 .year(request.getYear())
                 .build();
-        Budget saved = budgetRepository.save(budget);
+        BudgetEntity saved = budgetRepository.save(budgetEntity);
         return ApiResult.success(toResponse(saved), "Tạo ngân sách thành công");
     }
 
@@ -82,20 +84,20 @@ public class BudgetService implements IBudgetService {
     @Override
     public ApiResult<BudgetResponse> updateBudget(Long id, BudgetRequest request) {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        User user = userRepository.findByEmail(email)
+        UserEntity user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UserMessageException("Không tìm thấy người dùng."));
 
-        Budget budget = budgetRepository.findByIdAndUserId(id, user.getId())
+        BudgetEntity budgetEntity = budgetRepository.findByIdAndUserId(id, user.getId())
                 .orElseThrow(() -> new UserMessageException("Không tìm thấy ngân sách."));
 
         if (request.getLimitAmount() != null) {
-            budget.setLimitAmount(request.getLimitAmount());
+            budgetEntity.setLimitAmount(request.getLimitAmount());
         }
         if (request.getMonth() != null) {
-            budget.setMonth(request.getMonth());
+            budgetEntity.setMonth(request.getMonth());
         }
         if (request.getYear() != null) {
-            budget.setYear(request.getYear());
+            budgetEntity.setYear(request.getYear());
         }
         if (request.getCategoryId() != null) {
             CategoryEntity category = categoryRepository.findById(request.getCategoryId())
@@ -103,18 +105,18 @@ public class BudgetService implements IBudgetService {
             if (!category.getUser().getId().equals(user.getId())) {
                 throw new UserMessageException("Bạn không có quyền gán danh mục này.");
             }
-            budget.setCategory(category);
+            budgetEntity.setCategory(category);
         }
 
-        budgetRepository.findByUserAndCategoryAndMonthAndYear(user.getId(), budget.getCategory().getId(),
-                budget.getMonth(), budget.getYear())
+        budgetRepository.findByUserAndCategoryAndMonthAndYear(user.getId(), budgetEntity.getCategory().getId(),
+                        budgetEntity.getMonth(), budgetEntity.getYear())
                 .ifPresent(existing -> {
-                    if (!existing.getId().equals(budget.getId())) {
+                    if (!existing.getId().equals(budgetEntity.getId())) {
                         throw new UserMessageException("Đã tồn tại ngân sách trùng danh mục/tháng/năm.");
                     }
                 });
 
-        Budget saved = budgetRepository.save(budget);
+        BudgetEntity saved = budgetRepository.save(budgetEntity);
         return ApiResult.success(toResponse(saved), "Cập nhật ngân sách thành công");
     }
 
@@ -129,12 +131,12 @@ public class BudgetService implements IBudgetService {
     @Override
     public ApiResult<BudgetResponse> getBudget(Long id) {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        User user = userRepository.findByEmail(email)
+        UserEntity user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UserMessageException("Không tìm thấy người dùng."));
 
-        Budget budget = budgetRepository.findByIdAndUserId(id, user.getId())
+        BudgetEntity budgetEntity = budgetRepository.findByIdAndUserId(id, user.getId())
                 .orElseThrow(() -> new UserMessageException("Không tìm thấy ngân sách."));
-        return ApiResult.success(toResponse(budget), "Lấy ngân sách thành công");
+        return ApiResult.success(toResponse(budgetEntity), "Lấy ngân sách thành công");
     }
 
     /**
@@ -150,7 +152,7 @@ public class BudgetService implements IBudgetService {
     @Override
     public ApiResult<BudgetResponse> getBudgetByCategory(Long categoryId, Integer month, Integer year) {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        User user = userRepository.findByEmail(email)
+        UserEntity user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UserMessageException("Không tìm thấy người dùng."));
 
         if (categoryId == null) {
@@ -160,9 +162,9 @@ public class BudgetService implements IBudgetService {
         int m = month != null ? month : now.getMonthValue();
         int y = year != null ? year : now.getYear();
 
-        Budget budget = budgetRepository.findByUserAndCategoryAndMonthAndYear(user.getId(), categoryId, m, y)
+        BudgetEntity budgetEntity = budgetRepository.findByUserAndCategoryAndMonthAndYear(user.getId(), categoryId, m, y)
                 .orElseThrow(() -> new UserMessageException("Không tìm thấy ngân sách theo danh mục."));
-        return ApiResult.success(toResponse(budget), "Lấy ngân sách theo danh mục thành công");
+        return ApiResult.success(toResponse(budgetEntity), "Lấy ngân sách theo danh mục thành công");
     }
 
     /**
@@ -177,7 +179,7 @@ public class BudgetService implements IBudgetService {
     @Override
     public ApiResult<List<BudgetResponse>> listBudgets(Integer month, Integer year) {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        User user = userRepository.findByEmail(email)
+        UserEntity user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UserMessageException("Không tìm thấy người dùng."));
 
         LocalDate now = LocalDate.now();
@@ -199,31 +201,31 @@ public class BudgetService implements IBudgetService {
     @Override
     public ApiResult<Void> deleteBudget(Long id) {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        User user = userRepository.findByEmail(email)
+        UserEntity user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UserMessageException("Không tìm thấy người dùng."));
 
-        Budget budget = budgetRepository.findByIdAndUserId(id, user.getId())
+        BudgetEntity budgetEntity = budgetRepository.findByIdAndUserId(id, user.getId())
                 .orElseThrow(() -> new UserMessageException("Không tìm thấy ngân sách."));
-        budgetRepository.delete(budget);
+        budgetRepository.delete(budgetEntity);
         return ApiResult.success(null, "Xóa ngân sách thành công");
     }
 
     /**
      * Chuyển đổi từ đối tượng Budget sang BudgetResponse.
      *
-     * @param budget Đối tượng Budget cần chuyển đổi.
+     * @param budgetEntity Đối tượng Budget cần chuyển đổi.
      * @return Đối tượng BudgetResponse tương ứng với Budget đầu vào.
      */
-    private BudgetResponse toResponse(Budget budget) {
+    private BudgetResponse toResponse(BudgetEntity budgetEntity) {
         BudgetResponse res = new BudgetResponse();
-        res.setId(budget.getId());
-        res.setLimitAmount(budget.getLimitAmount());
-        res.setMonth(budget.getMonth());
-        res.setYear(budget.getYear());
-        res.setCategoryId(budget.getCategory() != null ? budget.getCategory().getId() : null);
-        res.setCategoryName(budget.getCategory() != null ? budget.getCategory().getName() : null);
-        res.setCreatedAt(budget.getCreatedAt());
-        res.setUpdatedAt(budget.getUpdatedAt());
+        res.setId(budgetEntity.getId());
+        res.setLimitAmount(budgetEntity.getLimitAmount());
+        res.setMonth(budgetEntity.getMonth());
+        res.setYear(budgetEntity.getYear());
+        res.setCategoryId(budgetEntity.getCategory() != null ? budgetEntity.getCategory().getId() : null);
+        res.setCategoryName(budgetEntity.getCategory() != null ? budgetEntity.getCategory().getName() : null);
+        res.setCreatedAt(budgetEntity.getCreatedAt());
+        res.setUpdatedAt(budgetEntity.getUpdatedAt());
         return res;
     }
 }

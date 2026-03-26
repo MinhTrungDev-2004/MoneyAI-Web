@@ -4,7 +4,7 @@ import com.datn.moneyai.exceptions.UserMessageException;
 import com.datn.moneyai.models.dtos.category.CategoryRequest;
 import com.datn.moneyai.models.dtos.category.CategoryResponse;
 import com.datn.moneyai.models.entities.bases.CategoryEntity;
-import com.datn.moneyai.models.entities.bases.User;
+import com.datn.moneyai.models.entities.bases.UserEntity;
 import com.datn.moneyai.models.entities.enums.CategoryType;
 import com.datn.moneyai.models.global.ApiResult;
 import com.datn.moneyai.repositories.CategoryRepository;
@@ -40,7 +40,7 @@ public class CategoryService implements ICategoryService {
     @Override
     public ApiResult<CategoryResponse> createCategory(CategoryRequest request) {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        User user = userRepository.findByEmail(email)
+        UserEntity user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UserMessageException("Không tìm thấy người dùng."));
 
         if (request.getType() == null) {
@@ -85,7 +85,7 @@ public class CategoryService implements ICategoryService {
     @Override
     public ApiResult<CategoryResponse> updateCategory(Long categoryId, CategoryRequest request) {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        User user = userRepository.findByEmail(email)
+        UserEntity user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UserMessageException("Không tìm thấy người dùng."));
 
         CategoryEntity category = categoryRepository.findById(categoryId)

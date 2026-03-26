@@ -9,19 +9,15 @@ import java.time.LocalDate;
 
 @Entity
 @Table(name = "saving_goals")
-@Getter
-@Setter
+@Data
+@EqualsAndHashCode(callSuper = true)
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
-public class SavingGoal extends BaseEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
+public class SavingGoalEntity extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    private UserEntity user;
 
     @Column(nullable = false)
     private String name;
