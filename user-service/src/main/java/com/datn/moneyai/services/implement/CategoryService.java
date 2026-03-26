@@ -3,7 +3,6 @@ package com.datn.moneyai.services.implement;
 import com.datn.moneyai.exceptions.UserMessageException;
 import com.datn.moneyai.models.dtos.category.CategoryRequest;
 import com.datn.moneyai.models.dtos.category.CategoryResponse;
-import com.datn.moneyai.models.dtos.category.CategoryTotalAmount;
 import com.datn.moneyai.models.entities.bases.CategoryEntity;
 import com.datn.moneyai.models.entities.bases.User;
 import com.datn.moneyai.models.entities.enums.CategoryType;
@@ -11,19 +10,22 @@ import com.datn.moneyai.models.global.ApiResult;
 import com.datn.moneyai.repositories.CategoryRepository;
 import com.datn.moneyai.repositories.UserRepository;
 import com.datn.moneyai.services.interfaces.ICategoryService;
-import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 @Service
-@RequiredArgsConstructor
 public class CategoryService implements ICategoryService {
-    private final CategoryRepository categoryRepository;
-    private final UserRepository userRepository;
+
+    @Autowired
+    private CategoryRepository categoryRepository;
+
+    @Autowired
+    private UserRepository userRepository;
 
     /**
      * Tạo mới một danh mục chi tiêu hoặc thu nhập.
@@ -127,11 +129,13 @@ public class CategoryService implements ICategoryService {
      *                              danh mục nào.
      */
     @Override
-    public ApiResult<List<CategoryResponse>> getsCategory() {
-        List<CategoryEntity> categories = categoryRepository.findAllActiveCategories();
+    public ApiResult<List<CategoryResponse>> getsCategory(Long userId) {
+        List<CategoryEntity> categories = categoryRepository.findAllActiveCategories(userId);
+
         return ApiResult.success(categories.stream()
                 .map(category -> CategoryResponse.builder()
                         .id(category.getId())
+                        .userId(category.getUser().getId())
                         .name(category.getName())
                         .type(category.getType())
                         .icon(category.getIcon())
@@ -140,30 +144,6 @@ public class CategoryService implements ICategoryService {
                         .updatedAt(category.getUpdatedAt())
                         .build())
                 .collect(Collectors.toList()), "Lấy danh mục thành công");
-    }
-
-    @Override
-    public ApiResult<List<CategoryTotalAmount>> getTotalAmountByAllCategoriesThisMonth() {
-        String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new UserMessageException("Không tìm thấy người dùng."));
-
-        List<Object[]> rawResults = categoryRepository.sumTotalAmountByAllCategoriesInMonth(user.getId());
-
-        List<CategoryTotalAmount> totals = rawResults.stream().map(row -> {
-            return CategoryTotalAmount.builder()
-                    .categoryId(((Number) row[0]).longValue())
-                    .categoryName((String) row[1])
-                    .categoryType((String) row[2])
-                    .icon((String) row[3])
-                    .colorCode((String) row[4])
-                    .totalAmount(new java.math.BigDecimal(row[5].toString()))
-                    .build();
-        }).collect(Collectors.toList());
-
-        return ApiResult.success(
-                totals,
-                "Lấy tổng số tiền của tất cả danh mục trong tháng thành công");
     }
 
     /**

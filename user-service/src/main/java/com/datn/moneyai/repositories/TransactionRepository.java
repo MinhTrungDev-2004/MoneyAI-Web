@@ -23,14 +23,6 @@ public interface TransactionRepository extends JpaRepository<TransactionEntity, 
     List<TransactionEntity> findAllActiveByCategoryAndUser(@Param("categoryId") Long categoryId,
                                                            @Param("userId") Long userId);
 
-    @Query(value = "SELECT COALESCE(SUM(total_amount), 0) FROM transactions " +
-            "WHERE category_id = :categoryId AND user_id = :userId " +
-            "AND transaction_date >= DATE_TRUNC('month', CURRENT_DATE) " +
-            "AND transaction_date < DATE_TRUNC('month', CURRENT_DATE) + INTERVAL '1 month'",
-            nativeQuery = true)
-    BigDecimal sumTotalAmountByCategoryAndMonth(@Param("categoryId") Long categoryId,
-                                                @Param("userId") Long userId);
-
     @Query("SELECT t FROM TransactionEntity t " +
             "JOIN FETCH t.category c " +
             "WHERE t.user.id = :userId " +
@@ -44,24 +36,9 @@ public interface TransactionRepository extends JpaRepository<TransactionEntity, 
     @Query(value = "SELECT COALESCE(SUM(t.total_amount), 0) FROM transactions t " +
             "INNER JOIN categories c ON t.category_id = c.id " +
             "WHERE t.user_id = :userId " +
-            "AND c.type = 'INCOME' " +
-            "AND EXTRACT(MONTH FROM t.transaction_date) = EXTRACT(MONTH FROM CURRENT_DATE)" +
-            "AND EXTRACT(YEAR FROM t.transaction_date) = EXTRACT(YEAR FROM CURRENT_DATE) " +
-            "AND t.total_amount > 0", nativeQuery = true)
-    BigDecimal calculateTotalIncome(@Param("userId") Long userId);
-
-    @Query(value = "SELECT COALESCE(SUM(t.total_amount), 0) FROM transactions t " +
-            "INNER JOIN categories c ON t.category_id = c.id " +
-            "WHERE t.user_id = :userId " +
             "AND c.type = 'EXPENSE' " +
             "AND EXTRACT(MONTH FROM t.transaction_date) = EXTRACT(MONTH FROM CURRENT_DATE) " +
             "AND EXTRACT(YEAR FROM t.transaction_date) = EXTRACT(YEAR FROM CURRENT_DATE) " +
             "AND t.total_amount > 0", nativeQuery = true)
     BigDecimal calculateTotalExpense(@Param("userId") Long userId);
-
-    @Query(value = "SELECT * FROM transactions " +
-            "WHERE user_id = :userId " +
-            "AND DATE(transaction_date) = :targetDate", nativeQuery = true)
-    List<TransactionEntity> findTransactionsByDate(@Param("userId") Long userId,
-                                                   @Param("targetDate") LocalDate targetDate);
 }

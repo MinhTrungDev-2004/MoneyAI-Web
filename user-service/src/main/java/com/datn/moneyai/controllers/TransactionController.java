@@ -8,15 +8,12 @@ import com.datn.moneyai.services.interfaces.ITransactionService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.List;
 
@@ -62,17 +59,5 @@ public class TransactionController {
     public ResponseEntity<ApiResult<List<TransactionResponse>>> getTransactionsByCategory(
             @PathVariable Long categoryId) {
         return ResponseEntity.ok(transactionService.getTransactionsByCategory(categoryId));
-    }
-
-    @Operation(summary = "Tính tổng thu nhập trong tháng hiện tại")
-    @GetMapping("/summary/income")
-    public ResponseEntity<ApiResult<BigDecimal>> calculateTotalIncome() {
-        return ResponseEntity.ok(transactionService.calculateTotalIncome());
-    }
-
-    @Operation(summary = "Tính tổng chi tiêu trong tháng hiện tại")
-    @GetMapping("/summary/expense")
-    public ResponseEntity<ApiResult<BigDecimal>> calculateTotalExpense() {
-        return ResponseEntity.ok(transactionService.calculateTotalExpense());
     }
 }

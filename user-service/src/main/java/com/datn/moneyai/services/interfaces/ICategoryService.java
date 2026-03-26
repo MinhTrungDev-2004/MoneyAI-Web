@@ -12,9 +12,7 @@ public interface ICategoryService {
 
     ApiResult<CategoryResponse> updateCategory(Long id, CategoryRequest request);
 
-    ApiResult<List<CategoryResponse>> getsCategory();
+    ApiResult<List<CategoryResponse>> getsCategory(Long id);
 
     ApiResult<Void> deleteCategory(Long id);
-
-    ApiResult<List<CategoryTotalAmount>> getTotalAmountByAllCategoriesThisMonth();
 }

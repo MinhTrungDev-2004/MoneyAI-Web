@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.extern.java.Log;
+
 import java.time.LocalDateTime;
 
 @Data
@@ -14,6 +16,8 @@ import java.time.LocalDateTime;
 public class CategoryResponse {
 
     private Long id;
+
+    private Long userId;
 
     private String name;
 

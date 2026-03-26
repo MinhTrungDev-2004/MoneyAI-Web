@@ -21,8 +21,4 @@ public interface ITransactionService {
     ApiResult<List<TransactionResponse>> getTransactionsByCategory(Long categoryId);
 
     ApiResult<List<TransactionResponse>> getTransactionsByMonth(YearMonth monthYear);
-
-    ApiResult<BigDecimal> calculateTotalIncome();
-
-    ApiResult<BigDecimal> calculateTotalExpense();
 }

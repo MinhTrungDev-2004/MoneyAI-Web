@@ -2,7 +2,6 @@ package com.datn.moneyai.controllers;
 
 import com.datn.moneyai.models.dtos.category.CategoryRequest;
 import com.datn.moneyai.models.dtos.category.CategoryResponse;
-import com.datn.moneyai.models.dtos.category.CategoryTotalAmount;
 import com.datn.moneyai.models.global.ApiResult;
 import com.datn.moneyai.services.interfaces.ICategoryService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -20,7 +19,7 @@ import java.util.List;
 @RequestMapping("/api/v1/categories")
 @Tag(name = "CategoryController", description = "Quản lý danh mục thu chi của người dùng")
 public class CategoryController {
-    
+
     private final ICategoryService categoryService;
 
     @Operation(summary = "Tạo mới một danh mục")
@@ -39,15 +38,10 @@ public class CategoryController {
     }
 
     @Operation(summary = "Lấy danh sách tất cả danh mục của người dùng hiện tại")
-    @GetMapping
-    public ResponseEntity<ApiResult<List<CategoryResponse>>> getAllCategory() {
-        return ResponseEntity.ok(categoryService.getsCategory());
-    }
 
-    @Operation(summary = "Tính tổng số tiền giao dịch của tất cả danh mục trong tháng hiện tại")
-    @GetMapping("/total-amount")
-    public ResponseEntity<ApiResult<List<CategoryTotalAmount>>> getTotalAmountByAllCategoriesThisMonth() {
-        return ResponseEntity.ok(categoryService.getTotalAmountByAllCategoriesThisMonth());
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<ApiResult<List<CategoryResponse>>> getsCategory(@PathVariable("userId") Long userId) {
+        return ResponseEntity.ok(categoryService.getsCategory(userId));
     }
 
     @Operation(summary = "Xóa một danh mục")

@@ -161,16 +161,4 @@ public class TransactionService implements ITransactionService {
 
         return ApiResult.success(responseList, "Lấy danh sách giao dịch theo tháng thành công");
     }
-
-    @Override
-    public ApiResult<BigDecimal> calculateTotalIncome() {
-        User user = getCurrentUser();
-        return ApiResult.success(transactionRepository.calculateTotalIncome(user.getId()), "Lấy tổng thu nhập thành công");
-    }
-
-    @Override
-    public ApiResult<BigDecimal> calculateTotalExpense() {
-        User user = getCurrentUser();
-        return ApiResult.success(transactionRepository.calculateTotalExpense(user.getId()), "Lấy tổng chi tiêu thành công");
-    }
 }
