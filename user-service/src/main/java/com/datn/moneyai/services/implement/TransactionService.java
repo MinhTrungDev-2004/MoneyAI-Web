@@ -1,12 +1,12 @@
 package com.datn.moneyai.services.implement;
 
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.Year;
 import java.time.YearMonth;
 import java.util.List;
 import java.util.Objects;
@@ -26,12 +26,16 @@ import com.datn.moneyai.services.interfaces.ITransactionService;
 import com.datn.moneyai.exceptions.UserMessageException;
 
 @Service
-@RequiredArgsConstructor
 public class TransactionService implements ITransactionService {
 
-    private final TransactionRepository transactionRepository;
-    private final CategoryRepository categoryRepository;
-    private final UserRepository userRepository;
+    @Autowired
+    private TransactionRepository transactionRepository;
+
+    @Autowired
+    private CategoryRepository categoryRepository;
+
+    @Autowired
+    private UserRepository userRepository;
 
     private User getCurrentUser() {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -160,5 +164,21 @@ public class TransactionService implements ITransactionService {
         List<TransactionResponse> responseList = list.stream().map(this::mapToResponse).toList();
 
         return ApiResult.success(responseList, "Lấy danh sách giao dịch theo tháng thành công");
+    }
+
+    @Override
+    public ApiResult<List<TransactionResponse>> getTransactionsByYear(Year year) {
+        if (year == null) {
+            throw new UserMessageException("Thiếu năm cần tra cứu");
+        }
+        User user = getCurrentUser();
+        LocalDate startDate = year.atDay(1);
+        LocalDate endDate = year.atMonth(12).atEndOfMonth();
+        List<TransactionEntity> list = transactionRepository.findAllByUserAndDateBetween(
+                user.getId(), startDate, endDate);
+
+        List<TransactionResponse> responseList = list.stream().map(this::mapToResponse).toList();
+
+        return ApiResult.success(responseList, "Lấy danh sách giao dịch năm " + year.getValue() + " thành công");
     }
 }

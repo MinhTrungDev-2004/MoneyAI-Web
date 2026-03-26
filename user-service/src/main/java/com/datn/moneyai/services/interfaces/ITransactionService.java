@@ -5,8 +5,7 @@ import com.datn.moneyai.models.dtos.transaction.TransactionResponse;
 import com.datn.moneyai.models.dtos.transaction.TransactionUpdateRequest;
 import com.datn.moneyai.models.global.ApiResult;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
+import java.time.Year;
 import java.time.YearMonth;
 import java.util.List;
 
@@ -21,4 +20,6 @@ public interface ITransactionService {
     ApiResult<List<TransactionResponse>> getTransactionsByCategory(Long categoryId);
 
     ApiResult<List<TransactionResponse>> getTransactionsByMonth(YearMonth monthYear);
+
+    ApiResult<List<TransactionResponse>> getTransactionsByYear(Year month);
 }

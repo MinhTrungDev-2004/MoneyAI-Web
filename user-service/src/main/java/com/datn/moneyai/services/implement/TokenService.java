@@ -5,12 +5,10 @@ import com.datn.moneyai.models.dtos.auth.TokenResponse;
 import com.datn.moneyai.models.entities.bases.User;
 import com.datn.moneyai.models.global.ApiResult;
 import com.datn.moneyai.models.security.JwtTokenProvider;
-import com.datn.moneyai.models.security.UserPrincipal;
 import com.datn.moneyai.repositories.UserRepository;
 import com.datn.moneyai.services.interfaces.ITokenService;
 import lombok.AllArgsConstructor;
 import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -55,13 +53,5 @@ public class TokenService implements ITokenService {
                 .build();
 
         return ApiResult.success(response, "Lấy thông tin người dùng thành công");
-    }
-
-    private Long getUserIdFromAuthentication(Authentication authentication) {
-        Object principal = authentication.getPrincipal();
-        if (principal instanceof UserPrincipal userPrincipal) {
-            return userPrincipal.getId();
-        }
-        throw new IllegalArgumentException("Không thể lấy thông tin người dùng từ Authentication");
     }
 }

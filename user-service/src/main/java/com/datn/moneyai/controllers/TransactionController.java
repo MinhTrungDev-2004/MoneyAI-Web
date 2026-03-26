@@ -14,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.Year;
 import java.time.YearMonth;
 import java.util.List;
 
@@ -52,6 +53,13 @@ public class TransactionController {
     public ResponseEntity<ApiResult<List<TransactionResponse>>> getTransactionsByMonth(
             @RequestParam("monthYear") @DateTimeFormat(pattern = "M/yyyy") YearMonth monthYear) {
         return ResponseEntity.ok(transactionService.getTransactionsByMonth(monthYear));
+    }
+
+    @Operation(summary = "Lấy danh sách giao dịch theo năm")
+    @GetMapping("/by-year")
+    public ResponseEntity<ApiResult<List<TransactionResponse>>> getTransactionsByYear(
+            @RequestParam("Year") @DateTimeFormat(pattern = "yyyy") Year Year) {
+        return ResponseEntity.ok(transactionService.getTransactionsByYear(Year));
     }
 
     @Operation(summary = "Lấy danh sách giao dịch theo danh mục")
