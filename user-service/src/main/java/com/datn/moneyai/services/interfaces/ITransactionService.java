@@ -21,5 +21,5 @@ public interface ITransactionService {
 
     ApiResult<List<TransactionResponse>> getTransactionsByMonth(YearMonth monthYear);
 
-    ApiResult<List<TransactionResponse>> getTransactionsByYear(Year month);
+    ApiResult<List<TransactionResponse>> getTransactionsByYear(Year month);  
 }

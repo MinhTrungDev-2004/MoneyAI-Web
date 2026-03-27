@@ -116,12 +116,15 @@ public class NotificationService implements INotificationService {
         if (request.getTitle() != null && !request.getTitle().isEmpty()) {
             notificationEntity.setTitle(request.getTitle());
         }
+
         if (request.getContent() != null && !request.getContent().isEmpty()) {
             notificationEntity.setContent(request.getContent());
         }
+
         if (request.getType() != null) {
             notificationEntity.setType(request.getType());
         }
+        
         if (request.getIsRead() != null) {
             notificationEntity.setRead(request.getIsRead());
         }
