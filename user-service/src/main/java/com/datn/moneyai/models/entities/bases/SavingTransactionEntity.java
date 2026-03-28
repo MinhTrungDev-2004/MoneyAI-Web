@@ -14,6 +14,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @Builder
 public class SavingTransactionEntity extends BaseEntity {
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "saving_goal_id", nullable = false)
     private SavingGoalEntity savingGoalEntity;

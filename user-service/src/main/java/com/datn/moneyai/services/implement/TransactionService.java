@@ -61,20 +61,19 @@ public class TransactionService implements ITransactionService {
     @Override
     public ApiResult<TransactionResponse> createTransaction(TransactionRequest request) {
         if (request == null) throw new UserMessageException("Dữ liệu yêu cầu không hợp lệ");
+
         if (request.getAmount() == null || request.getAmount().signum() <= 0) {
             throw new UserMessageException("Số tiền phải lớn hơn 0");
         }
+
         if (request.getTransactionDate() == null) throw new UserMessageException("Vui lòng chọn ngày giao dịch");
+
         if (request.getCategoryId() == null) throw new UserMessageException("Vui lòng chọn danh mục");
 
         UserEntity user = getCurrentUser();
 
         CategoryEntity category = categoryRepository.findActiveCategoryById(request.getCategoryId())
                 .orElseThrow(() -> new UserMessageException("Không tìm thấy danh mục hoặc danh mục đã bị xóa!"));
-
-        if (!Objects.equals(category.getUser().getId(), user.getId())) {
-            throw new UserMessageException("Bạn không có quyền sử dụng danh mục này.");
-        }
 
         TransactionEntity transaction = TransactionEntity.builder()
                 .totalAmount(request.getAmount())
