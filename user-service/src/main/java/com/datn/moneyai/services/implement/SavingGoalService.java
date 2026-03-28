@@ -40,7 +40,8 @@ public class SavingGoalService implements ISavingGoalService {
                 .id(savingGoalEntity.getId())
                 .name(savingGoalEntity.getName())
                 .targetAmount(savingGoalEntity.getTargetAmount())
-                .targetAmount(savingGoalEntity.getTargetAmount())
+                .deadlineDate(savingGoalEntity.getDeadlineDate())
+                .status(savingGoalEntity.getStatus())
                 .updatedAt(savingGoalEntity.getUpdatedAt())
                 .createdAt(savingGoalEntity.getCreatedAt())
                 .build();
@@ -106,6 +107,10 @@ public class SavingGoalService implements ISavingGoalService {
 
     @Override
     public ApiResult<SavingGoalResponse> deleteSavingGoal(Long id) {
-        return null;
+        UserEntity user = getCurrentUser();
+        SavingGoalEntity savingGoalEntity = savingGoalRepository.findByIdAndUserId(user.getId(), id)
+                .orElseThrow(() -> new UserMessageException("Không tìm thấy mục tiêu tích kiệm hoặc đã bị xóa!"));
+        savingGoalRepository.delete(savingGoalEntity);
+        return ApiResult.success(null, "Xóa mục tiêu tích kiệm thành công");
     }
 }
