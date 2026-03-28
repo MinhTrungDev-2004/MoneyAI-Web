@@ -14,11 +14,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import static io.lettuce.core.KillArgs.Builder.id;
 
 @Service
 public class SavingGoalService implements ISavingGoalService {
@@ -40,8 +39,12 @@ public class SavingGoalService implements ISavingGoalService {
                 .id(savingGoalEntity.getId())
                 .name(savingGoalEntity.getName())
                 .targetAmount(savingGoalEntity.getTargetAmount())
+                .currentAmount(savingGoalEntity.getCurrentAmount() != null ? savingGoalEntity.getCurrentAmount() : BigDecimal.ZERO)
                 .deadlineDate(savingGoalEntity.getDeadlineDate())
                 .status(savingGoalEntity.getStatus())
+                .iconName(savingGoalEntity.getIconName())
+                .colorClass(savingGoalEntity.getColorClass())
+                .bgClass(savingGoalEntity.getBgClass())
                 .updatedAt(savingGoalEntity.getUpdatedAt())
                 .createdAt(savingGoalEntity.getCreatedAt())
                 .build();
@@ -52,11 +55,15 @@ public class SavingGoalService implements ISavingGoalService {
         UserEntity user = getCurrentUser();
 
         SavingGoalEntity savingGoalEntity = SavingGoalEntity.builder()
-                .user(getCurrentUser())
+                .user(user)
                 .name(request.getName())
                 .targetAmount(request.getTargetAmount())
+                .currentAmount(request.getCurrentAmount())
                 .deadlineDate(request.getDeadlineDate())
                 .status(request.getStatus() != null ? request.getStatus() : SavingGoalStatus.ONGOING)
+                .iconName(request.getIconName())
+                .colorClass(request.getColorClass())
+                .bgClass(request.getBgClass())
                 .build();
 
         SavingGoalEntity savedGoalEntity = savingGoalRepository.save(savingGoalEntity);
@@ -88,6 +95,18 @@ public class SavingGoalService implements ISavingGoalService {
 
         if (request.getDeadlineDate() != null) {
             savingGoalEntity.setDeadlineDate(request.getDeadlineDate());
+        }
+
+        if (request.getIconName() != null) {
+            savingGoalEntity.setIconName(request.getIconName());
+        }
+
+        if (request.getColorClass() != null) {
+            savingGoalEntity.setColorClass(request.getColorClass());
+        }
+
+        if (request.getBgClass() != null) {
+            savingGoalEntity.setBgClass(request.getBgClass());
         }
 
         SavingGoalEntity updateSavingGoal = savingGoalRepository.save(savingGoalEntity);

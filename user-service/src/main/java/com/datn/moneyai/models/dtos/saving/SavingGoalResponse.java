@@ -21,9 +21,17 @@ public class SavingGoalResponse {
 
     private BigDecimal targetAmount;
 
+    private BigDecimal currentAmount;
+
     private LocalDate deadlineDate;
 
     private SavingGoalStatus status;
+
+    private String iconName;
+
+    private String colorClass;
+
+    private String bgClass;
 
     private LocalDateTime createdAt;
 

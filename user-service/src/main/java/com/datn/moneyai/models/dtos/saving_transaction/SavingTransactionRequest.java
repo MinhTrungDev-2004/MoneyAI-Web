@@ -1,18 +1,15 @@
-package com.datn.moneyai.models.dtos.SavingTransaction;
+package com.datn.moneyai.models.dtos.saving_transaction;
 
-import lombok.AllArgsConstructor;
+import com.datn.moneyai.models.entities.enums.SavingTransactionType;
 import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Data
 @Builder
-@NoArgsConstructor
-@AllArgsConstructor
-public class SavingTransactionResponse {
+public class SavingTransactionRequest {
 
     private Long savingGoalId;
 
@@ -20,5 +17,8 @@ public class SavingTransactionResponse {
 
     private LocalDate transactionDate;
 
+    private SavingTransactionType type;
+
     private String note;
+
 }

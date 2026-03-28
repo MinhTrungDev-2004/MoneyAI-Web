@@ -14,7 +14,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @Builder
 public class TransactionEntity extends BaseEntity {
-    
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private UserEntity user;
@@ -31,8 +31,6 @@ public class TransactionEntity extends BaseEntity {
 
     @Column(columnDefinition = "TEXT")
     private String note;
-
-    private String source;
 
     private String referenceId;
 }

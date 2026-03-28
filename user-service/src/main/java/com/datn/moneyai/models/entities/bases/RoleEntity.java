@@ -11,6 +11,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class RoleEntity extends BaseEntity {
+    
     @Enumerated(EnumType.STRING)
     @Column(length = 20, unique = true)
     private RoleName name;

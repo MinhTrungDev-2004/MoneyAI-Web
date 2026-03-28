@@ -17,7 +17,6 @@ import com.datn.moneyai.models.dtos.transaction.TransactionResponse;
 import com.datn.moneyai.models.dtos.transaction.TransactionUpdateRequest;
 import com.datn.moneyai.models.entities.bases.CategoryEntity;
 import com.datn.moneyai.models.entities.bases.TransactionEntity;
-import com.datn.moneyai.models.entities.enums.TransactionSource;
 import com.datn.moneyai.models.global.ApiResult;
 import com.datn.moneyai.repositories.CategoryRepository;
 import com.datn.moneyai.repositories.TransactionRepository;
@@ -56,8 +55,7 @@ public class TransactionService implements ITransactionService {
                 .note(transactionEntity.getNote())
                 .build();
     }
-
-
+    
     @Override
     public ApiResult<TransactionResponse> createTransaction(TransactionRequest request) {
         if (request == null) throw new UserMessageException("Dữ liệu yêu cầu không hợp lệ");
@@ -81,7 +79,6 @@ public class TransactionService implements ITransactionService {
                 .transactionDate(request.getTransactionDate() != null ? request.getTransactionDate() : LocalDateTime.now().toLocalDate())
                 .category(category)
                 .user(user)
-                .source(TransactionSource.MANUAL.name())
                 .build();
 
         TransactionEntity savedTransaction = transactionRepository.save(transaction);

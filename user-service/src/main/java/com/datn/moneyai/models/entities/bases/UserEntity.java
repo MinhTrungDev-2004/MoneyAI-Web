@@ -15,17 +15,19 @@ import java.util.Set;
 @Builder
 public class UserEntity extends BaseEntity {
 
-    @Column(unique = true, nullable = false)
+    @Column(name = "email", unique = true, nullable = false)
     private String email;
 
-    @Column(nullable = false)
+    @Column(name = "password", nullable = false)
     private String password;
 
+    @Column(name = "full_name")
     private String fullName;
 
+    @Column(name = "avatar_url")
     private String avatarUrl;
 
-    @Column(length = 5)
+    @Column(name = "default_currency", length = 5)
     private String defaultCurrency;
 
     @Column(name = "is_active")

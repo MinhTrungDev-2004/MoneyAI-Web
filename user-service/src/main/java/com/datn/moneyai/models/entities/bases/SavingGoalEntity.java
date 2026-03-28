@@ -15,18 +15,32 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SavingGoalEntity extends BaseEntity {
-    
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private UserEntity user;
 
-    @Column(nullable = false)
+    @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(nullable = false, precision = 19, scale = 4)
+    @Column(name = "target_amount", nullable = false, precision = 19, scale = 4)
     private BigDecimal targetAmount;
 
+    @Builder.Default
+    @Column(name = "current_amount", nullable = false, precision = 19, scale = 4)
+    private BigDecimal currentAmount = BigDecimal.ZERO;
+
+    @Column(name = "deadline_date")
     private LocalDate deadlineDate;
+
+    @Column(name = "icon_name")
+    private String iconName;
+
+    @Column(name = "color_class")
+    private String colorClass;
+
+    @Column(name = "bg_class")
+    private String bgClass;
 
     @Enumerated(EnumType.STRING)
     @Column(length = 20)

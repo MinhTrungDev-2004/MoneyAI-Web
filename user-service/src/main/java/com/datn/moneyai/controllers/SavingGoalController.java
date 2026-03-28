@@ -22,7 +22,6 @@ public class SavingGoalController {
     @Autowired
     private SavingGoalService savingGoalService;
 
-
     @Operation(summary = "Tạo mới mục tiêu")
     @PostMapping()
     public ResponseEntity<ApiResult<SavingGoalResponse>> createSavingGoal(
@@ -33,14 +32,14 @@ public class SavingGoalController {
     @Operation(summary = "Cập nhật thông tin mục tiêu tích kiệm")
     @PutMapping("/{id}")
     public ResponseEntity<ApiResult<SavingGoalResponse>> updateSavingGoal(
-            @Valid Long id,
+            @PathVariable Long id,
             @RequestBody SavingGoalRequest request) {
         return ResponseEntity.ok(savingGoalService.updateSavingGoal(id, request));
     }
 
     @Operation(summary = "Lấy danh sách mục tiêu tích kiệm")
     @GetMapping
-    public ResponseEntity<ApiResult<List<SavingGoalResponse>>> updateSavingGoal() {
+    public ResponseEntity<ApiResult<List<SavingGoalResponse>>> getSavingGoals() {
         return ResponseEntity.ok(savingGoalService.getsSavingGoal());
     }
 

@@ -19,7 +19,15 @@ public class SavingGoalRequest {
 
     private BigDecimal targetAmount;
 
+    private BigDecimal currentAmount;
+
     private LocalDate deadlineDate;
 
     private SavingGoalStatus status;
+
+    private String iconName;
+
+    private String colorClass;
+
+    private String bgClass;
 }

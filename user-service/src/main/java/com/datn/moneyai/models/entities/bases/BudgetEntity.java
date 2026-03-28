@@ -13,7 +13,7 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 @Builder
 public class BudgetEntity extends BaseEntity {
-    
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private UserEntity user;
@@ -22,12 +22,12 @@ public class BudgetEntity extends BaseEntity {
     @JoinColumn(name = "category_id")
     private CategoryEntity category;
 
-    @Column(nullable = false, precision = 19, scale = 4)
+    @Column(name = "limit_amount", nullable = false, precision = 19, scale = 4)
     private BigDecimal limitAmount;
 
-    @Column(nullable = false)
+    @Column(name = "month", nullable = false)
     private Integer month;
 
-    @Column(nullable = false)
+    @Column(name = "year", nullable = false)
     private Integer year;
 }

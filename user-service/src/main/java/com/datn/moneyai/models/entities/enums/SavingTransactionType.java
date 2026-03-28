@@ -1,13 +1,12 @@
 package com.datn.moneyai.models.entities.enums;
 
-public enum AiMessageRole {
-    USER("Người Dùng"),
-    ASSISTANT("Trợ Lý Ảo"),
-    SYSTEM("Hệ Thống");
+public enum SavingTransactionType {
+    DEPOSIT("Nạp Thêm"),
+    WITHDRAWAL("Rút bớt");
 
     private final String displayName;
 
-    AiMessageRole(String displayName) {
+    SavingTransactionType(String displayName) {
         this.displayName = displayName;
     }
 

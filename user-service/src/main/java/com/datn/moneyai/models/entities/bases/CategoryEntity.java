@@ -12,21 +12,23 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 public class CategoryEntity extends BaseEntity {
-    
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     private UserEntity user;
 
-    @Column(nullable = false)
+    @Column(name = "name_category", nullable = false)
     private String name;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 20)
+    @Column(name = "type", nullable = false, length = 20)
     private CategoryType type;
 
+    @Column(name = "icon")
     private String icon;
 
+    @Column(name = "color_code")
     private String colorCode;
 }

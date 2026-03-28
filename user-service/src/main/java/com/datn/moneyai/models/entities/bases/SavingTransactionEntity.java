@@ -1,5 +1,6 @@
 package com.datn.moneyai.models.entities.bases;
 
+import com.datn.moneyai.models.entities.enums.SavingTransactionType;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -19,11 +20,15 @@ public class SavingTransactionEntity extends BaseEntity {
     @JoinColumn(name = "saving_goal_id", nullable = false)
     private SavingGoalEntity savingGoalEntity;
 
-    @Column(nullable = false, precision = 19, scale = 4)
+    @Column(name = "amount", nullable = false, precision = 19, scale = 4)
     private BigDecimal amount;
 
-    @Column(nullable = false)
+    @Column(name = "transaction_date", nullable = false)
     private LocalDate transactionDate;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "type", length = 20, nullable = false)
+    private SavingTransactionType type;
 
     private String note;
 }
