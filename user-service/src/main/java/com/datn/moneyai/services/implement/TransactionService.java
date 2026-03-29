@@ -1,7 +1,6 @@
 package com.datn.moneyai.services.implement;
 
 import com.datn.moneyai.models.entities.bases.UserEntity;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -51,18 +50,21 @@ public class TransactionService implements ITransactionService {
                 .note(transactionEntity.getNote())
                 .build();
     }
-    
+
     @Override
     public TransactionResponse createTransaction(TransactionRequest request) {
-        if (request == null) throw new UserMessageException("Dữ liệu yêu cầu không hợp lệ");
+        if (request == null)
+            throw new UserMessageException("Dữ liệu yêu cầu không hợp lệ");
 
         if (request.getAmount() == null || request.getAmount().signum() <= 0) {
             throw new UserMessageException("Số tiền phải lớn hơn 0");
         }
 
-        if (request.getTransactionDate() == null) throw new UserMessageException("Vui lòng chọn ngày giao dịch");
+        if (request.getTransactionDate() == null)
+            throw new UserMessageException("Vui lòng chọn ngày giao dịch");
 
-        if (request.getCategoryId() == null) throw new UserMessageException("Vui lòng chọn danh mục");
+        if (request.getCategoryId() == null)
+            throw new UserMessageException("Vui lòng chọn danh mục");
 
         UserEntity user = getCurrentUser();
 
@@ -72,7 +74,8 @@ public class TransactionService implements ITransactionService {
         TransactionEntity transaction = TransactionEntity.builder()
                 .totalAmount(request.getAmount())
                 .note(request.getNote())
-                .transactionDate(request.getTransactionDate() != null ? request.getTransactionDate() : LocalDateTime.now().toLocalDate())
+                .transactionDate(request.getTransactionDate() != null ? request.getTransactionDate()
+                        : LocalDateTime.now().toLocalDate())
                 .category(category)
                 .user(user)
                 .build();
@@ -84,7 +87,8 @@ public class TransactionService implements ITransactionService {
 
     @Override
     public TransactionResponse updateTransaction(Long id, TransactionUpdateRequest request) {
-        if (id == null) throw new UserMessageException("Thiếu id giao dịch");
+        if (id == null)
+            throw new UserMessageException("Thiếu id giao dịch");
 
         UserEntity user = getCurrentUser();
 
@@ -102,7 +106,8 @@ public class TransactionService implements ITransactionService {
         }
 
         if (request.getAmount() != null) {
-            if (request.getAmount().signum() <= 0) throw new UserMessageException("Số tiền phải lớn hơn 0");
+            if (request.getAmount().signum() <= 0)
+                throw new UserMessageException("Số tiền phải lớn hơn 0");
             transactionEntity.setTotalAmount(request.getAmount());
         }
 
@@ -121,7 +126,8 @@ public class TransactionService implements ITransactionService {
 
     @Override
     public void deleteTransaction(Long id) {
-        if (id == null) throw new UserMessageException("Thiếu id giao dịch");
+        if (id == null)
+            throw new UserMessageException("Thiếu id giao dịch");
         UserEntity user = getCurrentUser();
         TransactionEntity transactionEntity = transactionRepository.findActiveByIdAndUser(id, user.getId())
                 .orElseThrow(() -> new UserMessageException("Không tìm thấy giao dịch hoặc đã bị xóa!"));
@@ -130,7 +136,8 @@ public class TransactionService implements ITransactionService {
 
     @Override
     public List<TransactionResponse> getTransactionsByCategory(Long categoryId) {
-        if (categoryId == null) throw new UserMessageException("Thiếu id danh mục");
+        if (categoryId == null)
+            throw new UserMessageException("Thiếu id danh mục");
 
         UserEntity user = getCurrentUser();
 
@@ -142,7 +149,8 @@ public class TransactionService implements ITransactionService {
 
     @Override
     public List<TransactionResponse> getTransactionsByMonth(YearMonth monthYear) {
-        if (monthYear == null) throw new UserMessageException("Thiếu tháng cần tra cứu");
+        if (monthYear == null)
+            throw new UserMessageException("Thiếu tháng cần tra cứu");
 
         UserEntity user = getCurrentUser();
 

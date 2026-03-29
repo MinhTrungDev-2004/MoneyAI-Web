@@ -9,6 +9,7 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 public class NotificationUpdateRequest {
+
     @NotBlank(message = "Vui lòng nhập tiêu đề thông báo")
     private String title;
 
@@ -16,6 +17,6 @@ public class NotificationUpdateRequest {
     private String content;
 
     private NotificationType type;
-    
+
     private Boolean isRead;
 }

@@ -9,10 +9,11 @@ import lombok.Setter;
 @Setter
 @Getter
 public class CategoryRequest {
+
     private String name;
 
     private CategoryType type;
-    
+
     private String icon;
 
     private String colorCode;

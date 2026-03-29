@@ -16,6 +16,5 @@ public class SavingGoalDetailResponse {
 
     private BigDecimal currentAmount;
 
-
     private List<SavingTransactionResponse> transactions;
 }

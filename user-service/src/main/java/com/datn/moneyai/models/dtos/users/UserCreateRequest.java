@@ -13,6 +13,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserCreateRequest {
+
     @Schema(example = "phamphuonganh@gmail.com")
     @NotBlank(message = "Vui lòng nhập email")
     private String email;

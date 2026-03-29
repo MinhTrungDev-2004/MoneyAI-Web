@@ -15,6 +15,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 public class SavingGoalResponse {
+
     private Long id;
 
     private String name;

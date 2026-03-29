@@ -9,6 +9,7 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 public class NotificationCreateRequest {
+
     @NotBlank(message = "Vui lòng nhập tiêu đề thông báo")
     private String title;
 

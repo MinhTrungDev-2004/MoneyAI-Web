@@ -10,10 +10,16 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 public class NotificationGetsResponse {
+
     private Long id;
+
     private NotificationType type;
+
     private String title;
+
     private String content;
+
     private boolean isRead;
+
     private LocalDateTime createdAt;
 }
