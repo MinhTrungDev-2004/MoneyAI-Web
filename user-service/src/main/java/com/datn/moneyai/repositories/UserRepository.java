@@ -2,6 +2,7 @@ package com.datn.moneyai.repositories;
 
 import com.datn.moneyai.models.entities.bases.UserEntity;
 import com.datn.moneyai.models.entities.enums.RoleName;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -14,6 +15,15 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
 
     Optional<UserEntity> findByEmail(String email);
 
-    @Query(value = "SELECT u.* FROM users u JOIN user_roles ur ON u.id = ur.user_id JOIN roles r ON ur.role_id = r.id WHERE r.name != :#{#role.name()}", nativeQuery = true)
+    @EntityGraph(attributePaths = {"userRoleEntities", "userRoleEntities.roleEntity"})
+    @Query("SELECT u FROM UserEntity u WHERE u.email = :email")
+    Optional<UserEntity> findByEmailWithRoles(@Param("email") String email);
+
+    @EntityGraph(attributePaths = {"userRoleEntities", "userRoleEntities.roleEntity"})
+    @Query("SELECT u FROM UserEntity u WHERE u.id = :id")
+    Optional<UserEntity> findByIdWithRoles(@Param("id") Long id);
+
+    @EntityGraph(attributePaths = {"userRoleEntities", "userRoleEntities.roleEntity"})
+    @Query("SELECT DISTINCT u FROM UserEntity u JOIN u.userRoleEntities ur JOIN ur.roleEntity r WHERE r.name <> :role")
     List<UserEntity> findByUserRoles_Role_NameNot(@Param("role") RoleName role);
 }

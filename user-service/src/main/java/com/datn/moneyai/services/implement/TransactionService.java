@@ -17,24 +17,20 @@ import com.datn.moneyai.models.dtos.transaction.TransactionResponse;
 import com.datn.moneyai.models.dtos.transaction.TransactionUpdateRequest;
 import com.datn.moneyai.models.entities.bases.CategoryEntity;
 import com.datn.moneyai.models.entities.bases.TransactionEntity;
-import com.datn.moneyai.models.global.ApiResult;
 import com.datn.moneyai.repositories.CategoryRepository;
 import com.datn.moneyai.repositories.TransactionRepository;
 import com.datn.moneyai.repositories.UserRepository;
 import com.datn.moneyai.services.interfaces.ITransactionService;
 import com.datn.moneyai.exceptions.UserMessageException;
+import lombok.RequiredArgsConstructor;
 
 @Service
+@RequiredArgsConstructor
 public class TransactionService implements ITransactionService {
 
-    @Autowired
-    private TransactionRepository transactionRepository;
-
-    @Autowired
-    private CategoryRepository categoryRepository;
-
-    @Autowired
-    private UserRepository userRepository;
+    private final TransactionRepository transactionRepository;
+    private final CategoryRepository categoryRepository;
+    private final UserRepository userRepository;
 
     private UserEntity getCurrentUser() {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -57,7 +53,7 @@ public class TransactionService implements ITransactionService {
     }
     
     @Override
-    public ApiResult<TransactionResponse> createTransaction(TransactionRequest request) {
+    public TransactionResponse createTransaction(TransactionRequest request) {
         if (request == null) throw new UserMessageException("Dữ liệu yêu cầu không hợp lệ");
 
         if (request.getAmount() == null || request.getAmount().signum() <= 0) {
@@ -83,11 +79,11 @@ public class TransactionService implements ITransactionService {
 
         TransactionEntity savedTransaction = transactionRepository.save(transaction);
 
-        return ApiResult.success(mapToResponse(savedTransaction), "Tạo giao dịch thành công");
+        return mapToResponse(savedTransaction);
     }
 
     @Override
-    public ApiResult<TransactionResponse> updateTransaction(Long id, TransactionUpdateRequest request) {
+    public TransactionResponse updateTransaction(Long id, TransactionUpdateRequest request) {
         if (id == null) throw new UserMessageException("Thiếu id giao dịch");
 
         UserEntity user = getCurrentUser();
@@ -120,21 +116,20 @@ public class TransactionService implements ITransactionService {
 
         TransactionEntity saved = transactionRepository.save(transactionEntity);
 
-        return ApiResult.success(mapToResponse(saved), "Cập nhật giao dịch thành công");
+        return mapToResponse(saved);
     }
 
     @Override
-    public ApiResult<Void> deleteTransaction(Long id) {
+    public void deleteTransaction(Long id) {
         if (id == null) throw new UserMessageException("Thiếu id giao dịch");
         UserEntity user = getCurrentUser();
         TransactionEntity transactionEntity = transactionRepository.findActiveByIdAndUser(id, user.getId())
                 .orElseThrow(() -> new UserMessageException("Không tìm thấy giao dịch hoặc đã bị xóa!"));
         transactionRepository.delete(transactionEntity);
-        return ApiResult.success(null, "Xóa giao dịch thành công");
     }
 
     @Override
-    public ApiResult<List<TransactionResponse>> getTransactionsByCategory(Long categoryId) {
+    public List<TransactionResponse> getTransactionsByCategory(Long categoryId) {
         if (categoryId == null) throw new UserMessageException("Thiếu id danh mục");
 
         UserEntity user = getCurrentUser();
@@ -142,11 +137,11 @@ public class TransactionService implements ITransactionService {
         List<TransactionEntity> list = transactionRepository.findAllActiveByCategoryAndUser(categoryId, user.getId());
         List<TransactionResponse> responseList = list.stream().map(this::mapToResponse).toList();
 
-        return ApiResult.success(responseList, "Lấy danh sách giao dịch theo danh mục thành công");
+        return responseList;
     }
 
     @Override
-    public ApiResult<List<TransactionResponse>> getTransactionsByMonth(YearMonth monthYear) {
+    public List<TransactionResponse> getTransactionsByMonth(YearMonth monthYear) {
         if (monthYear == null) throw new UserMessageException("Thiếu tháng cần tra cứu");
 
         UserEntity user = getCurrentUser();
@@ -159,11 +154,11 @@ public class TransactionService implements ITransactionService {
 
         List<TransactionResponse> responseList = list.stream().map(this::mapToResponse).toList();
 
-        return ApiResult.success(responseList, "Lấy danh sách giao dịch theo tháng thành công");
+        return responseList;
     }
 
     @Override
-    public ApiResult<List<TransactionResponse>> getTransactionsByYear(Year year) {
+    public List<TransactionResponse> getTransactionsByYear(Year year) {
         if (year == null) {
             throw new UserMessageException("Thiếu năm cần tra cứu");
         }
@@ -175,6 +170,6 @@ public class TransactionService implements ITransactionService {
 
         List<TransactionResponse> responseList = list.stream().map(this::mapToResponse).toList();
 
-        return ApiResult.success(responseList, "Lấy danh sách giao dịch năm " + year.getValue() + " thành công");
+        return responseList;
     }
 }

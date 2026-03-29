@@ -26,6 +26,13 @@ public class TokenBlackListRepository {
                         Duration.ofSeconds(tokenBlackList.getExpirationSeconds()));
     }
 
+    /**
+     * @param token raw JWT string (same key as used when blacklisting after logout)
+     */
+    public boolean isBlacklisted(String token) {
+        return Boolean.TRUE.equals(redisTemplate.hasKey(composeHeader(token)));
+    }
+
     private String composeHeader(String key) {
         return String.format("TokenBlackList:%s", key);
     }

@@ -3,18 +3,21 @@ package com.datn.moneyai.controllers;
 import com.datn.moneyai.models.dtos.auth.LoginRequest;
 import com.datn.moneyai.models.dtos.auth.TokenResponse;
 import com.datn.moneyai.models.dtos.users.UserCreateRequest;
+import com.datn.moneyai.models.dtos.users.UserGetsResponse;
 import com.datn.moneyai.models.global.ApiResult;
 import com.datn.moneyai.models.dtos.auth.LoginGetResponse;
-import com.datn.moneyai.models.security.UserPrincipal;
+import com.datn.moneyai.security.UserPrincipal;
 import com.datn.moneyai.services.interfaces.ITokenService;
 import com.datn.moneyai.services.interfaces.IAuthService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -23,6 +26,8 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -34,10 +39,15 @@ public class AuthController {
     private final ITokenService tokenService;
     private final IAuthService authService;
 
+    /** Bật true khi chạy HTTPS (production); localhost HTTP thường để false. */
+    @Value("${app.cookie.secure:false}")
+    private boolean cookieSecure;
+
     @Operation(summary = "Đăng ký tài khoản mới")
     @PostMapping("/register")
     public ResponseEntity<ApiResult<Long>> register(@Valid @RequestBody UserCreateRequest request) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(authService.createUser(request));
+        Long userId = authService.createUser(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResult.success(userId, "Đăng ký thành công."));
     }
 
     @Operation(summary = "Đăng nhập", description = "Trả về AccessToken trong Body và RefreshToken ẩn an toàn trong HttpOnly Cookie")
@@ -49,12 +59,12 @@ public class AuthController {
                             request.getEmail(),
                             request.getPassword()));
             UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-            ApiResult<TokenResponse> tokens = tokenService.generateTokens(userDetails);
+            TokenResponse tokens = tokenService.generateTokens(userDetails);
 
             // Lưu RefreshToken vào Cookie
-            ResponseCookie cookie = ResponseCookie.from("refreshToken", tokens.getData().getRefreshToken())
+            ResponseCookie cookie = ResponseCookie.from("refreshToken", tokens.getRefreshToken())
                     .httpOnly(true)
-                    .secure(false)
+                    .secure(cookieSecure)
                     .path("/")
                     .maxAge(7 * 24 * 60 * 60) // Sống 7 ngày
                     .sameSite("Strict")
@@ -62,7 +72,7 @@ public class AuthController {
 
             return ResponseEntity.ok()
                     .header(HttpHeaders.SET_COOKIE, cookie.toString())
-                    .body(ApiResult.success(tokens.getData(), "Đăng nhập thành công"));
+                    .body(ApiResult.success(tokens, "Đăng nhập thành công"));
         } catch (BadCredentialsException ex) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(ApiResult.fail("Email hoặc mật khẩu không chính xác"));
@@ -73,8 +83,8 @@ public class AuthController {
     @GetMapping("/me")
     public ResponseEntity<ApiResult<LoginGetResponse>> getCurrentUser(
             @AuthenticationPrincipal UserPrincipal userPrincipal) {
-        ApiResult<LoginGetResponse> result = tokenService.getUserInfo(userPrincipal.getId());
-        return ResponseEntity.ok(result);
+        LoginGetResponse result = tokenService.getUserInfo(userPrincipal.getId());
+        return ResponseEntity.ok(ApiResult.success(result, "Lấy thông tin người dùng thành công"));
     }
 
     @Operation(summary = "Đăng xuất", description = "Xóa RefreshToken trong Cookie và vô hiệu hóa AccessToken")
@@ -92,7 +102,7 @@ public class AuthController {
         // Xóa cookie bằng cách set maxAge = 0
         ResponseCookie clearCookie = ResponseCookie.from("refreshToken", "")
                 .httpOnly(true)
-                .secure(false)
+                .secure(cookieSecure)
                 .path("/")
                 .maxAge(0)
                 .build();
@@ -100,5 +110,13 @@ public class AuthController {
         return ResponseEntity.ok()
                 .header(HttpHeaders.SET_COOKIE, clearCookie.toString())
                 .body(ApiResult.success(null, "Đăng xuất thành công"));
+    }
+
+    @Operation(summary = "Lấy danh sách người dùng (Admin only)")
+    @GetMapping("/users")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<ApiResult<List<UserGetsResponse>>> getUsers() {
+        List<UserGetsResponse> users = authService.getUser();
+        return ResponseEntity.ok(ApiResult.success(users, "Lấy danh sách người dùng thành công."));
     }
 }

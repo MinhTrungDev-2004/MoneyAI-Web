@@ -1,6 +1,5 @@
 package com.datn.moneyai.models.dtos.users;
 
-import com.datn.moneyai.models.entities.enums.RoleName;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 
@@ -21,6 +20,4 @@ public class UserCreateRequest {
     @Schema(example = "123456789")
     @NotBlank(message = "Vui lòng nhập mật khẩu")
     private String password;
-
-    private RoleName role;
 }

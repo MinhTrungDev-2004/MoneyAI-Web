@@ -10,10 +10,9 @@ import com.datn.moneyai.models.entities.bases.UserEntity;
 import com.datn.moneyai.models.entities.bases.UserRoleEntity;
 import com.datn.moneyai.models.entities.enums.CategoryType;
 import com.datn.moneyai.models.entities.enums.RoleName;
-import com.datn.moneyai.models.global.ApiResult;
 import com.datn.moneyai.models.redis.TokenBlackList;
 import com.datn.moneyai.models.redis.TokenBlackListRepository;
-import com.datn.moneyai.models.security.JwtTokenProvider;
+import com.datn.moneyai.security.JwtTokenProvider;
 import com.datn.moneyai.repositories.CategoryRepository;
 import com.datn.moneyai.repositories.RoleRepository;
 import com.datn.moneyai.repositories.UserRepository;
@@ -21,7 +20,6 @@ import com.datn.moneyai.services.interfaces.IAuthService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -34,39 +32,20 @@ import java.util.Set;
 @RequiredArgsConstructor
 @Slf4j
 public class AuthService implements IAuthService {
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-
-    @Autowired
-    private RoleRepository roleRepository;
-
-    @Autowired
-    private JwtTokenProvider jwtTokenProvider;
-
-    @Autowired
-    private TokenBlackListRepository tokenBlackListRepository;
-
-    @Autowired
-    private StringRedisTemplate redisTemplate;
-
-    @Autowired
-    private CategoryRepository categoryRepository;
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final RoleRepository roleRepository;
+    private final JwtTokenProvider jwtTokenProvider;
+    private final TokenBlackListRepository tokenBlackListRepository;
+    private final StringRedisTemplate redisTemplate;
+    private final CategoryRepository categoryRepository;
 
     /**
-     * Tạo mới một tài khoản người dùng hoặc quản trị viên (Admin).
-     *
-     * @param request Dữ liệu đầu vào chứa thông tin đăng ký (email, password,
-     *                role).
-     * @return ApiResult mang theo ID của người dùng vừa được tạo thành công.
-     * @throws UserMessageException Nếu email đã tồn tại hoặc vai trò (role) không
-     *                              hợp lệ.
+     * Đăng ký tài khoản người dùng thường (luôn gán ROLE_USER; không cho client tự chọn role).
      */
     @Override
     @Transactional
-    public ApiResult<Long> createUser(UserCreateRequest request) {
+    public Long createUser(UserCreateRequest request) {
         if (userRepository.existsByEmail(request.getEmail())) {
             throw new UserMessageException("Email đã tồn tại.");
         }
@@ -79,9 +58,8 @@ public class AuthService implements IAuthService {
                 .isActive(true)
                 .build();
 
-        RoleName targetRoleName = (request.getRole() != null) ? request.getRole() : RoleName.USER;
-        RoleEntity userRoleEntityEntity = roleRepository.findByName(targetRoleName)
-                .orElseThrow(() -> new UserMessageException("Lỗi hệ thống: Không tìm thấy quyền (" + targetRoleName + ")."));
+        RoleEntity userRoleEntityEntity = roleRepository.findByName(RoleName.USER)
+                .orElseThrow(() -> new UserMessageException("Lỗi hệ thống: Không tìm thấy quyền USER."));
 
         UserRoleEntity userRoleEntity = UserRoleEntity.builder()
                 .user(newUser)
@@ -103,18 +81,16 @@ public class AuthService implements IAuthService {
 
         categoryRepository.saveAll(defaultCategories);
 
-        return ApiResult.success(newUser.getId(), "Đăng ký thành công.");
+        return newUser.getId();
     }
 
     /**
      * Lấy danh sách những người dùng có quyền hệ thống (loại trừ các User thông
      * thường).
      * Kết quả trả về sẽ được sắp xếp theo thời gian cập nhật mới nhất.
-     *
-     * @return ApiResult chứa danh sách (List) các đối tượng UserGetsResponse.
      */
     @Override
-    public ApiResult<List<UserGetsResponse>> getUser() {
+    public List<UserGetsResponse> getUser() {
         List<UserEntity> users = userRepository.findByUserRoles_Role_NameNot(RoleName.USER);
 
         List<UserGetsResponse> responseList = users.stream()
@@ -132,21 +108,15 @@ public class AuthService implements IAuthService {
                         Comparator.nullsLast(Comparator.reverseOrder())))
                 .toList();
 
-        return ApiResult.success(responseList, "Lấy danh sách người dùng thành công.");
+        return responseList;
     }
 
-    @Override
     /**
      * Xử lý đăng xuất người dùng bằng cách vô hiệu hóa Access Token và Refresh
      * Token.
-     *
-     * @param accessToken  Token truy cập hiện tại của người dùng.
-     * @param refreshToken Token làm mới của người dùng cần được thu hồi.
-     * @return ApiResult<Void> mang theo trạng thái và thông báo đăng xuất thành
-     *         công.
      */
-    public ApiResult<Void> logout(String accessToken, String refreshToken) {
-        // 1. Đưa Access Token vào Blacklist
+    @Override
+    public void logout(String accessToken, String refreshToken) {
         if (accessToken != null && !accessToken.trim().isEmpty()) {
             blacklistToken(accessToken);
         }
@@ -161,22 +131,13 @@ public class AuthService implements IAuthService {
             }
             blacklistToken(refreshToken);
         }
-        return ApiResult.success(null, "Đăng xuất thành công");
     }
 
-    /**
-     * Hàm phụ trợ tính toán thời gian sống còn lại và đưa Token vào Redis
-     * (Blacklist).
-     *
-     * @param token Chuỗi token (Access Token hoặc Refresh Token) cần vô hiệu hóa.
-     */
     private void blacklistToken(String token) {
         try {
-            // Lấy thời gian hết hạn của token
             long expirationSeconds = Math.max(0,
                     (jwtTokenProvider.extractExpiration(token).getTime() - System.currentTimeMillis()) / 1000);
 
-            // Nếu token còn hạn thì mới cần cho vào blacklist
             if (expirationSeconds > 0) {
                 TokenBlackList blackListRecord = new TokenBlackList(token, expirationSeconds);
                 tokenBlackListRepository.put(blackListRecord);

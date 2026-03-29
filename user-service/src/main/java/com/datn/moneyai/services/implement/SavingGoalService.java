@@ -6,11 +6,10 @@ import com.datn.moneyai.models.dtos.saving.SavingGoalResponse;
 import com.datn.moneyai.models.entities.bases.SavingGoalEntity;
 import com.datn.moneyai.models.entities.bases.UserEntity;
 import com.datn.moneyai.models.entities.enums.SavingGoalStatus;
-import com.datn.moneyai.models.global.ApiResult;
 import com.datn.moneyai.repositories.SavingGoalRepository;
 import com.datn.moneyai.repositories.UserRepository;
 import com.datn.moneyai.services.interfaces.ISavingGoalService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -20,13 +19,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class SavingGoalService implements ISavingGoalService {
 
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private SavingGoalRepository savingGoalRepository;
+    private final UserRepository userRepository;
+    private final SavingGoalRepository savingGoalRepository;
 
     private UserEntity getCurrentUser() {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -51,7 +48,7 @@ public class SavingGoalService implements ISavingGoalService {
     }
 
     @Override
-    public ApiResult<SavingGoalResponse> createSavingGoal(SavingGoalRequest request) {
+    public SavingGoalResponse createSavingGoal(SavingGoalRequest request) {
         UserEntity user = getCurrentUser();
 
         SavingGoalEntity savingGoalEntity = SavingGoalEntity.builder()
@@ -67,11 +64,11 @@ public class SavingGoalService implements ISavingGoalService {
                 .build();
 
         SavingGoalEntity savedGoalEntity = savingGoalRepository.save(savingGoalEntity);
-        return ApiResult.success(mapToGetResponse(savedGoalEntity), "Tạo mới mục tiêu thành công");
+        return mapToGetResponse(savedGoalEntity);
     }
 
     @Override
-    public ApiResult<SavingGoalResponse> updateSavingGoal(Long id, SavingGoalRequest request) {
+    public SavingGoalResponse updateSavingGoal(Long id, SavingGoalRequest request) {
         UserEntity user = getCurrentUser();
 
         SavingGoalEntity savingGoalEntity = savingGoalRepository.findById(id)
@@ -110,26 +107,25 @@ public class SavingGoalService implements ISavingGoalService {
         }
 
         SavingGoalEntity updateSavingGoal = savingGoalRepository.save(savingGoalEntity);
-        return ApiResult.success(mapToGetResponse(updateSavingGoal), "Cập nhật thành công");
+        return mapToGetResponse(updateSavingGoal);
     }
 
     @Override
-    public ApiResult<List<SavingGoalResponse>> getsSavingGoal() {
+    public List<SavingGoalResponse> getsSavingGoal() {
         UserEntity user = getCurrentUser();
 
         List<SavingGoalEntity> savingGoalEntities = savingGoalRepository.findByUser(user.getId());
         List<SavingGoalResponse> response = savingGoalEntities.stream()
                 .map(this::mapToGetResponse)
                 .collect(Collectors.toList());
-        return ApiResult.success(response, "Lấy danh sách mục tiêu tích kiệm thành công");
+        return response;
     }
 
     @Override
-    public ApiResult<SavingGoalResponse> deleteSavingGoal(Long id) {
+    public void deleteSavingGoal(Long id) {
         UserEntity user = getCurrentUser();
         SavingGoalEntity savingGoalEntity = savingGoalRepository.findByIdAndUserId(user.getId(), id)
                 .orElseThrow(() -> new UserMessageException("Không tìm thấy mục tiêu tích kiệm hoặc đã bị xóa!"));
         savingGoalRepository.delete(savingGoalEntity);
-        return ApiResult.success(null, "Xóa mục tiêu tích kiệm thành công");
     }
 }

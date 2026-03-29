@@ -41,7 +41,8 @@ eureka:
         prefer-ip-address: true
 
 jwt:
-    secret: ThisIsA_VeryLongSecretKey_ForJwtMoneyAi_ChangeMe123456
+    # Trùng khóa với user-service; đặt qua biến môi trường JWT_SECRET khi deploy
+    secret: ${JWT_SECRET:ThisIsA_VeryLongSecretKey_ForJwtMoneyAi_ChangeMe123456}
 
 springdoc:
     swagger-ui:

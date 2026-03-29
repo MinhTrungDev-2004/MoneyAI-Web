@@ -28,7 +28,8 @@ public class NotificationController {
     @PostMapping
     public ResponseEntity<ApiResult<NotificationGetResponse>> createNotification(
             @Valid @RequestBody NotificationCreateRequest request) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(notificationService.createNotification(request));
+        NotificationGetResponse response = notificationService.createNotification(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResult.success(response, "Tạo thông báo thành công"));
     }
 
     @Operation(summary = "Cập nhật thông tin thông báo")
@@ -36,18 +37,21 @@ public class NotificationController {
     public ResponseEntity<ApiResult<NotificationGetResponse>> updateNotification(
             @PathVariable Long id,
             @Valid @RequestBody NotificationUpdateRequest request) {
-        return ResponseEntity.ok(notificationService.updateNotification(id, request));
+        NotificationGetResponse response = notificationService.updateNotification(id, request);
+        return ResponseEntity.ok(ApiResult.success(response, "Cập nhật thông báo thành công"));
     }
 
     @Operation(summary = "Lấy danh sách tất cả thông báo của người dùng hiện tại")
     @GetMapping
     public ResponseEntity<ApiResult<List<NotificationGetsResponse>>> getAllNotification() {
-        return ResponseEntity.ok(notificationService.getsNotification());
+        List<NotificationGetsResponse> response = notificationService.getsNotification();
+        return ResponseEntity.ok(ApiResult.success(response, "Lấy danh sách thông báo thành công"));
     }
 
     @Operation(summary = "Xóa một thông báo")
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResult<Void>> deleteNotification(@PathVariable Long id) {
-        return ResponseEntity.ok(notificationService.deleteNotification(id));
+        notificationService.deleteNotification(id);
+        return ResponseEntity.ok(ApiResult.success(null, "Xóa thông báo thành công"));
     }
 }

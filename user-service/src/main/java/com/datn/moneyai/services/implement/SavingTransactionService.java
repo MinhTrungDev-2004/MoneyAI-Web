@@ -9,13 +9,13 @@ import com.datn.moneyai.models.entities.bases.SavingTransactionEntity;
 import com.datn.moneyai.models.entities.bases.UserEntity;
 import com.datn.moneyai.models.entities.enums.SavingGoalStatus;
 import com.datn.moneyai.models.entities.enums.SavingTransactionType;
-import com.datn.moneyai.models.global.ApiResult;
 import com.datn.moneyai.repositories.SavingGoalRepository;
 import com.datn.moneyai.repositories.SavingTransactionRepository;
 import com.datn.moneyai.repositories.UserRepository;
 import com.datn.moneyai.services.interfaces.ISavingTransactionService;
 import jakarta.transaction.Transactional;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -25,16 +25,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class SavingTransactionService implements ISavingTransactionService {
 
-    @Autowired
-    private SavingTransactionRepository savingTransactionRepository;
-
-    @Autowired
-    private SavingGoalRepository savingGoalRepository;
-
-    @Autowired
-    private UserRepository userRepository;
+    private final SavingTransactionRepository savingTransactionRepository;
+    private final SavingGoalRepository savingGoalRepository;
+    private final UserRepository userRepository;
 
     private UserEntity getCurrentUser() {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -57,7 +53,7 @@ public class SavingTransactionService implements ISavingTransactionService {
 
     @Override
     @Transactional
-    public ApiResult<SavingTransactionResponse> createSavingTransaction(SavingTransactionRequest request) {
+    public SavingTransactionResponse createSavingTransaction(SavingTransactionRequest request) {
         UserEntity currentUser = getCurrentUser();
 
         if (request == null) {
@@ -115,15 +111,18 @@ public class SavingTransactionService implements ISavingTransactionService {
                 .note(request.getNote())
                 .build();
 
-        // 6. Lưu cả 2 vào Database
-        savingGoalRepository.save(savingGoal);
-        SavingTransactionEntity savedEntity = savingTransactionRepository.save(savingTransactionEntity);
-
-        return ApiResult.success(mapToResponse(savedEntity), "Tạo mới giao dịch quỹ thành công");
+        // 6. Lưu cả 2 vào Database (SavingGoal có @Version để tránh ghi đè khi giao dịch đồng thời)
+        try {
+            savingGoalRepository.save(savingGoal);
+            SavingTransactionEntity savedEntity = savingTransactionRepository.save(savingTransactionEntity);
+            return mapToResponse(savedEntity);
+        } catch (ObjectOptimisticLockingFailureException e) {
+            throw new UserMessageException("Giao dịch xung đột với thao tác khác. Vui lòng thử lại.");
+        }
     }
 
     @Override
-    public ApiResult<SavingGoalDetailResponse> getSavingTransaction(Long savingGoalId) {
+    public SavingGoalDetailResponse getSavingTransaction(Long savingGoalId) {
 
         // 1. Tìm Goal để lấy currentAmount (số dư hiện tại)
         SavingGoalEntity savingGoal = savingGoalRepository.findById(savingGoalId)
@@ -143,6 +142,6 @@ public class SavingTransactionService implements ISavingTransactionService {
                 .transactions(savingTransactionResponses)
                 .build();
 
-        return ApiResult.success(responseData, "Lấy chi tiết giao dịch mục tiêu tiết kiệm thành công");
+        return responseData;
     }
 }

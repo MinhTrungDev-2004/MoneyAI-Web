@@ -1,6 +1,7 @@
 package com.datn.moneyai.exceptions;
 
 import com.datn.moneyai.models.global.ApiResult;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -12,6 +13,7 @@ import org.springframework.web.servlet.resource.NoResourceFoundException;
 import java.util.HashMap;
 import java.util.Map;
 
+@Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -58,13 +60,10 @@ public class GlobalExceptionHandler {
                 .body(ApiResult.fail("Phương thức HTTP không được hỗ trợ cho API này"));
     }
 
-    // Xử lý lỗi chung
+    // Xử lý lỗi chung — không trả chi tiết nội bộ ra client (chỉ ghi log)
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiResult<Object>> handleGlobalException(Exception ex) {
-        ApiResult<Object> error = new ApiResult<>();
-        error.setStatus(false);
-        error.setUserMessage("Đã có lỗi xảy ra");
-        error.setInternalMessage(ex.getMessage());
-        return ResponseEntity.internalServerError().body(error);
+        log.error("Unhandled exception", ex);
+        return ResponseEntity.internalServerError().body(ApiResult.fail("Đã có lỗi xảy ra"));
     }
 }

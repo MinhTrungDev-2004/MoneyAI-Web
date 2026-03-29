@@ -8,11 +8,10 @@ import com.datn.moneyai.models.dtos.notification.NotificationUpdateRequest;
 import com.datn.moneyai.models.entities.bases.NotificationEntity;
 import com.datn.moneyai.models.entities.bases.UserEntity;
 import com.datn.moneyai.models.entities.enums.NotificationType;
-import com.datn.moneyai.models.global.ApiResult;
 import com.datn.moneyai.repositories.NotificationRepository;
 import com.datn.moneyai.repositories.UserRepository;
 import com.datn.moneyai.services.interfaces.INotificationService;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -20,10 +19,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class NotificationService implements INotificationService {
-    final NotificationRepository notificationRepository;
-    final UserRepository userRepository;
+    private final NotificationRepository notificationRepository;
+    private final UserRepository userRepository;
 
     /**
      * Lấy thông tin người dùng hiện tại từ Security Context.
@@ -80,7 +79,7 @@ public class NotificationService implements INotificationService {
      * @return Đối tượng ApiResult chứa thông tin về kết quả tạo thông báo.
      */
     @Override
-    public ApiResult<NotificationGetResponse> createNotification(NotificationCreateRequest request) {
+    public NotificationGetResponse createNotification(NotificationCreateRequest request) {
         UserEntity user = getCurrentUser();
 
         NotificationEntity notificationEntity = NotificationEntity.builder()
@@ -92,7 +91,7 @@ public class NotificationService implements INotificationService {
                 .build();
 
         NotificationEntity savedNotificationEntity = notificationRepository.save(notificationEntity);
-        return ApiResult.success(mapToGetResponse(savedNotificationEntity), "Tạo thông báo thành công");
+        return mapToGetResponse(savedNotificationEntity);
     }
 
     /**
@@ -104,7 +103,7 @@ public class NotificationService implements INotificationService {
      * @return Đối tượng ApiResult chứa thông tin về kết quả cập nhật thông báo.
      */
     @Override
-    public ApiResult<NotificationGetResponse> updateNotification(Long id, NotificationUpdateRequest request) {
+    public NotificationGetResponse updateNotification(Long id, NotificationUpdateRequest request) {
         UserEntity user = getCurrentUser();
         NotificationEntity notificationEntity = notificationRepository.findById(id)
                 .orElseThrow(() -> new UserMessageException("Thông báo không tồn tại"));
@@ -130,7 +129,7 @@ public class NotificationService implements INotificationService {
         }
 
         NotificationEntity updatedNotificationEntity = notificationRepository.save(notificationEntity);
-        return ApiResult.success(mapToGetResponse(updatedNotificationEntity), "Cập nhật thông báo thành công");
+        return mapToGetResponse(updatedNotificationEntity);
     }
 
     /**
@@ -139,13 +138,12 @@ public class NotificationService implements INotificationService {
      * @return Đối tượng ApiResult chứa danh sách thông báo.
      */
     @Override
-    public ApiResult<List<NotificationGetsResponse>> getsNotification() {
+    public List<NotificationGetsResponse> getsNotification() {
         UserEntity user = getCurrentUser();
         List<NotificationEntity> notificationEntities = notificationRepository.findByUserIdOrderByCreatedAtDesc(user.getId());
-        List<NotificationGetsResponse> responses = notificationEntities.stream()
+        return notificationEntities.stream()
                 .map(this::mapToGetsResponse)
                 .collect(Collectors.toList());
-        return ApiResult.success(responses, "Lấy danh sách thông báo thành công");
     }
 
     /**
@@ -155,7 +153,7 @@ public class NotificationService implements INotificationService {
      * @return Đối tượng ApiResult chứa thông tin về kết quả xóa thông báo.
      */
     @Override
-    public ApiResult<Void> deleteNotification(Long id) {
+    public void deleteNotification(Long id) {
         UserEntity user = getCurrentUser();
         NotificationEntity notificationEntity = notificationRepository.findById(id)
                 .orElseThrow(() -> new UserMessageException("Thông báo không tồn tại"));
@@ -165,6 +163,5 @@ public class NotificationService implements INotificationService {
         }
 
         notificationRepository.delete(notificationEntity);
-        return ApiResult.success(null, "Xóa thông báo thành công");
     }
 }

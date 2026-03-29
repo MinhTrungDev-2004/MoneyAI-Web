@@ -46,4 +46,8 @@ public class SavingGoalEntity extends BaseEntity {
     @Column(length = 20)
     @Builder.Default
     private SavingGoalStatus status = SavingGoalStatus.ONGOING;
+
+    @Version
+    @Column(name = "version")
+    private Long version;
 }

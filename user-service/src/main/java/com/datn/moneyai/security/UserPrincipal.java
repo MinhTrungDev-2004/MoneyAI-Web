@@ -1,4 +1,4 @@
-package com.datn.moneyai.models.security;
+package com.datn.moneyai.security;
 
 import java.util.Collection;
 import java.util.Collections;

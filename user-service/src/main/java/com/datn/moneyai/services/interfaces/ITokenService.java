@@ -2,11 +2,10 @@ package com.datn.moneyai.services.interfaces;
 
 import com.datn.moneyai.models.dtos.auth.LoginGetResponse;
 import com.datn.moneyai.models.dtos.auth.TokenResponse;
-import com.datn.moneyai.models.global.ApiResult;
 import org.springframework.security.core.userdetails.UserDetails;
 
 public interface ITokenService {
-    ApiResult<TokenResponse> generateTokens(UserDetails userDetails);
+    TokenResponse generateTokens(UserDetails userDetails);
 
-    ApiResult<LoginGetResponse> getUserInfo(Long userId);
+    LoginGetResponse getUserInfo(Long userId);
 }

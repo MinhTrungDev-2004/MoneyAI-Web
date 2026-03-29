@@ -25,7 +25,8 @@ public class BudgetController {
     @Operation(summary = "Tạo mới một ngân sách")
     @PostMapping
     public ResponseEntity<ApiResult<BudgetResponse>> createBudget(@Valid @RequestBody BudgetRequest request) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(budgetService.createBudget(request));
+        BudgetResponse response = budgetService.createBudget(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResult.success(response, "Tạo ngân sách thành công"));
     }
 
     @Operation(summary = "Cập nhật thông tin ngân sách")
@@ -33,13 +34,15 @@ public class BudgetController {
     public ResponseEntity<ApiResult<BudgetResponse>> updateBudget(
             @PathVariable Long id,
             @Valid @RequestBody BudgetRequest request) {
-        return ResponseEntity.ok(budgetService.updateBudget(id, request));
+        BudgetResponse response = budgetService.updateBudget(id, request);
+        return ResponseEntity.ok(ApiResult.success(response, "Cập nhật ngân sách thành công"));
     }
 
     @Operation(summary = "Lấy chi tiết một ngân sách theo ID")
     @GetMapping("/{id}")
     public ResponseEntity<ApiResult<BudgetResponse>> getBudget(@PathVariable Long id) {
-        return ResponseEntity.ok(budgetService.getBudget(id));
+        BudgetResponse response = budgetService.getBudget(id);
+        return ResponseEntity.ok(ApiResult.success(response, "Lấy ngân sách thành công"));
     }
 
     @Operation(summary = "Lấy thông tin ngân sách theo danh mục")
@@ -48,7 +51,8 @@ public class BudgetController {
             @PathVariable Long categoryId,
             @RequestParam(required = false) Integer month,
             @RequestParam(required = false) Integer year) {
-        return ResponseEntity.ok(budgetService.getBudgetByCategory(categoryId, month, year));
+        BudgetResponse response = budgetService.getBudgetByCategory(categoryId, month, year);
+        return ResponseEntity.ok(ApiResult.success(response, "Lấy ngân sách theo danh mục thành công"));
     }
 
     @Operation(summary = "Lấy danh sách tất cả ngân sách")
@@ -56,12 +60,14 @@ public class BudgetController {
     public ResponseEntity<ApiResult<List<BudgetResponse>>> listBudgets(
             @RequestParam(required = false) Integer month,
             @RequestParam(required = false) Integer year) {
-        return ResponseEntity.ok(budgetService.listBudgets(month, year));
+        List<BudgetResponse> response = budgetService.listBudgets(month, year);
+        return ResponseEntity.ok(ApiResult.success(response, "Lấy danh sách ngân sách thành công"));
     }
 
     @Operation(summary = "Xóa một ngân sách")
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResult<Void>> deleteBudget(@PathVariable Long id) {
-        return ResponseEntity.ok(budgetService.deleteBudget(id));
+        budgetService.deleteBudget(id);
+        return ResponseEntity.ok(ApiResult.success(null, "Xóa ngân sách thành công"));
     }
 }

@@ -15,11 +15,11 @@ import org.springframework.data.repository.query.Param;
 @Repository
 public interface TransactionRepository extends JpaRepository<TransactionEntity, Long> {
 
-    @Query(value = "SELECT * FROM transactions WHERE id = :id AND user_id = :userId", nativeQuery = true)
+    @Query("SELECT t FROM TransactionEntity t JOIN FETCH t.category WHERE t.id = :id AND t.user.id = :userId")
     Optional<TransactionEntity> findActiveByIdAndUser(@Param("id") Long id,
                                                       @Param("userId") Long userId);
 
-    @Query(value = "SELECT * FROM transactions WHERE category_id = :categoryId AND user_id = :userId", nativeQuery = true)
+    @Query("SELECT t FROM TransactionEntity t JOIN FETCH t.category WHERE t.category.id = :categoryId AND t.user.id = :userId")
     List<TransactionEntity> findAllActiveByCategoryAndUser(@Param("categoryId") Long categoryId,
                                                            @Param("userId") Long userId);
 

@@ -8,7 +8,7 @@ import com.datn.moneyai.services.interfaces.ISavingTransactionService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,21 +16,23 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/v1/saving-transactions")
 @Tag(name = "SavingTransactionController", description = "Quản lý giao dịch mục tiêu tích kiệm")
+@RequiredArgsConstructor
 public class SavingTransactionController {
 
-    @Autowired
-    private ISavingTransactionService savingTransactionService;
+    private final ISavingTransactionService savingTransactionService;
 
     @Operation(summary = "Tạo mới một giao dịch tích kiệm")
     @PostMapping
     public ResponseEntity<ApiResult<SavingTransactionResponse>> createSavingTransaction(
             @Valid @RequestBody SavingTransactionRequest request) {
-        return ResponseEntity.ok(savingTransactionService.createSavingTransaction(request));
+        SavingTransactionResponse response = savingTransactionService.createSavingTransaction(request);
+        return ResponseEntity.ok(ApiResult.success(response, "Tạo mới giao dịch quỹ thành công"));
     }
 
     @Operation(summary = "Lấy giao dịch mục tiêu tích kiệm")
     @GetMapping("/{savingGoalId}")
     public ResponseEntity<ApiResult<SavingGoalDetailResponse>> getSavingTransaction(@PathVariable Long savingGoalId) {
-        return ResponseEntity.ok(savingTransactionService.getSavingTransaction(savingGoalId));
+        SavingGoalDetailResponse response = savingTransactionService.getSavingTransaction(savingGoalId);
+        return ResponseEntity.ok(ApiResult.success(response, "Lấy chi tiết giao dịch mục tiêu tiết kiệm thành công"));
     }
 }

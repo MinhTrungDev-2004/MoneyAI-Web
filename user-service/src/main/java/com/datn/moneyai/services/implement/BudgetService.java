@@ -6,7 +6,6 @@ import com.datn.moneyai.models.dtos.budget.BudgetResponse;
 import com.datn.moneyai.models.entities.bases.BudgetEntity;
 import com.datn.moneyai.models.entities.bases.CategoryEntity;
 import com.datn.moneyai.models.entities.bases.UserEntity;
-import com.datn.moneyai.models.global.ApiResult;
 import com.datn.moneyai.repositories.BudgetRepository;
 import com.datn.moneyai.repositories.CategoryRepository;
 import com.datn.moneyai.repositories.UserRepository;
@@ -37,7 +36,7 @@ public class BudgetService implements IBudgetService {
      *                              thấy danh mục.
      */
     @Override
-    public ApiResult<BudgetResponse> createBudget(BudgetRequest request) {
+    public BudgetResponse createBudget(BudgetRequest request) {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         UserEntity user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UserMessageException("Không tìm thấy người dùng."));
@@ -69,7 +68,7 @@ public class BudgetService implements IBudgetService {
                 .year(request.getYear())
                 .build();
         BudgetEntity saved = budgetRepository.save(budgetEntity);
-        return ApiResult.success(toResponse(saved), "Tạo ngân sách thành công");
+        return toResponse(saved);
     }
 
     /**
@@ -82,7 +81,7 @@ public class BudgetService implements IBudgetService {
      *                              không hợp lệ.
      */
     @Override
-    public ApiResult<BudgetResponse> updateBudget(Long id, BudgetRequest request) {
+    public BudgetResponse updateBudget(Long id, BudgetRequest request) {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         UserEntity user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UserMessageException("Không tìm thấy người dùng."));
@@ -117,7 +116,7 @@ public class BudgetService implements IBudgetService {
                 });
 
         BudgetEntity saved = budgetRepository.save(budgetEntity);
-        return ApiResult.success(toResponse(saved), "Cập nhật ngân sách thành công");
+        return toResponse(saved);
     }
 
     /**
@@ -129,14 +128,14 @@ public class BudgetService implements IBudgetService {
      *                              không có quyền truy cập.
      */
     @Override
-    public ApiResult<BudgetResponse> getBudget(Long id) {
+    public BudgetResponse getBudget(Long id) {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         UserEntity user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UserMessageException("Không tìm thấy người dùng."));
 
         BudgetEntity budgetEntity = budgetRepository.findByIdAndUserId(id, user.getId())
                 .orElseThrow(() -> new UserMessageException("Không tìm thấy ngân sách."));
-        return ApiResult.success(toResponse(budgetEntity), "Lấy ngân sách thành công");
+        return toResponse(budgetEntity);
     }
 
     /**
@@ -150,7 +149,7 @@ public class BudgetService implements IBudgetService {
      *                              không có quyền truy cập.
      */
     @Override
-    public ApiResult<BudgetResponse> getBudgetByCategory(Long categoryId, Integer month, Integer year) {
+    public BudgetResponse getBudgetByCategory(Long categoryId, Integer month, Integer year) {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         UserEntity user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UserMessageException("Không tìm thấy người dùng."));
@@ -164,7 +163,7 @@ public class BudgetService implements IBudgetService {
 
         BudgetEntity budgetEntity = budgetRepository.findByUserAndCategoryAndMonthAndYear(user.getId(), categoryId, m, y)
                 .orElseThrow(() -> new UserMessageException("Không tìm thấy ngân sách theo danh mục."));
-        return ApiResult.success(toResponse(budgetEntity), "Lấy ngân sách theo danh mục thành công");
+        return toResponse(budgetEntity);
     }
 
     /**
@@ -177,7 +176,7 @@ public class BudgetService implements IBudgetService {
      *                              không có quyền truy cập.
      */
     @Override
-    public ApiResult<List<BudgetResponse>> listBudgets(Integer month, Integer year) {
+    public List<BudgetResponse> listBudgets(Integer month, Integer year) {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         UserEntity user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UserMessageException("Không tìm thấy người dùng."));
@@ -186,8 +185,8 @@ public class BudgetService implements IBudgetService {
         int m = month != null ? month : now.getMonthValue();
         int y = year != null ? year : now.getYear();
 
-        return ApiResult.success(budgetRepository.findAllByUserAndMonthAndYear(user.getId(), m, y)
-                .stream().map(this::toResponse).collect(Collectors.toList()), "Lấy danh sách ngân sách thành công");
+        return budgetRepository.findAllByUserAndMonthAndYear(user.getId(), m, y)
+                .stream().map(this::toResponse).collect(Collectors.toList());
     }
 
     /**
@@ -199,7 +198,7 @@ public class BudgetService implements IBudgetService {
      *                              không có quyền truy cập.
      */
     @Override
-    public ApiResult<Void> deleteBudget(Long id) {
+    public void deleteBudget(Long id) {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         UserEntity user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UserMessageException("Không tìm thấy người dùng."));
@@ -207,7 +206,6 @@ public class BudgetService implements IBudgetService {
         BudgetEntity budgetEntity = budgetRepository.findByIdAndUserId(id, user.getId())
                 .orElseThrow(() -> new UserMessageException("Không tìm thấy ngân sách."));
         budgetRepository.delete(budgetEntity);
-        return ApiResult.success(null, "Xóa ngân sách thành công");
     }
 
     /**

@@ -3,11 +3,11 @@ package com.datn.moneyai.controllers;
 import com.datn.moneyai.models.dtos.saving.SavingGoalRequest;
 import com.datn.moneyai.models.dtos.saving.SavingGoalResponse;
 import com.datn.moneyai.models.global.ApiResult;
-import com.datn.moneyai.services.implement.SavingGoalService;
+import com.datn.moneyai.services.interfaces.ISavingGoalService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,16 +17,17 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/saving-goals")
 @Tag(name = "SavingGoalController", description = "Mục tiêu tích kiệm")
+@RequiredArgsConstructor
 public class SavingGoalController {
 
-    @Autowired
-    private SavingGoalService savingGoalService;
+    private final ISavingGoalService savingGoalService;
 
     @Operation(summary = "Tạo mới mục tiêu")
     @PostMapping()
     public ResponseEntity<ApiResult<SavingGoalResponse>> createSavingGoal(
             @Valid @RequestBody SavingGoalRequest request) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(savingGoalService.createSavingGoal(request));
+        SavingGoalResponse response = savingGoalService.createSavingGoal(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResult.success(response, "Tạo mới mục tiêu thành công"));
     }
 
     @Operation(summary = "Cập nhật thông tin mục tiêu tích kiệm")
@@ -34,18 +35,21 @@ public class SavingGoalController {
     public ResponseEntity<ApiResult<SavingGoalResponse>> updateSavingGoal(
             @PathVariable Long id,
             @RequestBody SavingGoalRequest request) {
-        return ResponseEntity.ok(savingGoalService.updateSavingGoal(id, request));
+        SavingGoalResponse response = savingGoalService.updateSavingGoal(id, request);
+        return ResponseEntity.ok(ApiResult.success(response, "Cập nhật thành công"));
     }
 
     @Operation(summary = "Lấy danh sách mục tiêu tích kiệm")
     @GetMapping
     public ResponseEntity<ApiResult<List<SavingGoalResponse>>> getSavingGoals() {
-        return ResponseEntity.ok(savingGoalService.getsSavingGoal());
+        List<SavingGoalResponse> response = savingGoalService.getsSavingGoal();
+        return ResponseEntity.ok(ApiResult.success(response, "Lấy danh sách mục tiêu tích kiệm thành công"));
     }
 
     @Operation(summary = "Xóa mục tiêu tích kiệm")
     @DeleteMapping("{id}")
-    public ResponseEntity<ApiResult<SavingGoalResponse>> deleteSavingGoal(@PathVariable Long id) {
-        return ResponseEntity.ok(savingGoalService.deleteSavingGoal(id));
+    public ResponseEntity<ApiResult<Void>> deleteSavingGoal(@PathVariable Long id) {
+        savingGoalService.deleteSavingGoal(id);
+        return ResponseEntity.ok(ApiResult.success(null, "Xóa mục tiêu tích kiệm thành công"));
     }
 }
